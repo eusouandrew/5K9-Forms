@@ -46,7 +46,7 @@ export const renderQuestions = (container) => {
             </div>
             
             <!-- Modal Novo -->
-            <div id="questionModal" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+            <div id="questionModal" class="modal-overlay hidden">
                 <div class="floating-card" style="width: 100%; max-width: 500px;">
                     <div class="flex justify-between items-center mb-4">
                         <h3>Nova Pergunta</h3>
@@ -138,10 +138,10 @@ export const renderQuestions = (container) => {
 
     const modal = document.getElementById('questionModal');
     document.getElementById('newQuestionBtn').addEventListener('click', () => {
-        modal.style.display = 'flex';
+        modal.classList.remove('hidden');
     });
     document.getElementById('closeModal').addEventListener('click', () => {
-        modal.style.display = 'none';
+        modal.classList.add('hidden');
     });
 
     document.getElementById('questionForm').addEventListener('submit', (e) => {
@@ -152,7 +152,7 @@ export const renderQuestions = (container) => {
             category: document.getElementById('qCategory').value,
             required: document.getElementById('qRequired').checked
         });
-        modal.style.display = 'none';
+        modal.classList.add('hidden');
         e.target.reset();
         renderList();
     });

@@ -54,20 +54,20 @@ export const renderForms = (container) => {
         }
 
         formsGrid.innerHTML = forms.map(f => `
-            <div style="border: 1px solid var(--color-sub); border-radius: 12px; padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; background-color: #fff; transition: box-shadow 0.2s;">
+            <div class="form-card animate-fade-in">
                 <div class="flex justify-between items-start">
-                    <div style="width: 48px; height: 48px; border-radius: 12px; background-color: var(--color-sub); display: flex; align-items: center; justify-content: center; color: var(--color-highlight);">
+                    <div style="width: 44px; height: 44px; border-radius: var(--border-radius-md); background-color: var(--color-main); display: flex; align-items: center; justify-content: center; color: var(--color-contrast);">
                         <i data-lucide="layout-template"></i>
                     </div>
-                    <span style="font-size: 0.75rem; background-color: var(--color-main); padding: 0.25rem 0.5rem; border-radius: 4px; color: var(--color-contrast);">0 Respostas</span>
+                    <span style="font-size: 0.75rem; background-color: var(--color-main); padding: 0.25rem 0.5rem; border-radius: 4px; color: var(--color-contrast); font-weight: 600;">0 Respostas</span>
                 </div>
                 <div>
-                    <h3 style="margin-bottom: 0.25rem; font-size: 1.1rem; color: var(--color-contrast);">${f.title || 'Sem Título'}</h3>
+                    <h3 style="margin-bottom: 0.25rem; font-size: 1.05rem; color: var(--color-contrast);">${f.title || 'Sem Título'}</h3>
                     <p style="font-size: 0.8rem; color: #888;">Modificado em ${new Date(f.createdAt).toLocaleDateString()}</p>
                 </div>
                 <div class="flex gap-2 mt-auto" style="border-top: 1px solid var(--color-sub); padding-top: 1rem;">
                     <a href="#/forms/edit/${f.id}" class="btn outline" style="flex: 1; justify-content: center; font-size: 0.85rem;"><i data-lucide="edit-3"></i> Editar</a>
-                    <a href="#/f/${f.id}" target="_blank" class="btn primary" style="padding: 0.75rem;"><i data-lucide="external-link"></i></a>
+                    <a href="#/f/${f.id}" target="_blank" class="btn primary" style="padding: 0.65rem;"><i data-lucide="external-link"></i></a>
                 </div>
             </div>
         `).join('');

@@ -36,13 +36,13 @@ export const renderEditor = (container, formId) => {
             <div class="flex-col w-full" style="height: 100vh;">
                 <div id="header-container"></div>
                 
-                <div class="page-content flex gap-4 p-4" style="padding: 1rem;">
+                <div class="page-content editor-layout">
                     
                     <!-- Área Principal de Edição -->
-                    <div class="flex-1 flex-col gap-4">
+                    <div class="editor-main-panel">
                         <div class="floating-card flex-col gap-4" style="padding: 1.5rem;">
                             <div class="flex justify-between items-center">
-                                <input type="text" id="formTitle" class="input-field" value="${form.title}" style="font-size: 1.5rem; font-weight: 600; border: none; padding: 0.5rem 0;" placeholder="Título do Formulário">
+                                <input type="text" id="formTitle" class="input-field" value="${form.title}" style="font-size: 1.5rem; font-weight: 700; border: none; padding: 0.5rem 0;" placeholder="Título do Formulário">
                                 <div class="flex gap-2">
                                     <button id="saveFormBtn" class="btn primary"><i data-lucide="save"></i> Salvar</button>
                                     <a href="#/f/${form.id}" target="_blank" class="btn outline"><i data-lucide="play"></i> Preview</a>
@@ -63,58 +63,57 @@ export const renderEditor = (container, formId) => {
                     </div>
 
                     <!-- Menu Lateral de Configurações -->
-                    <div class="floating-card" style="width: 320px; padding: 1.5rem; overflow-y: auto;">
-                        <h3 class="mb-4 flex items-center gap-2"><i data-lucide="settings"></i> Configurações</h3>
+                    <div class="floating-card editor-sidebar" style="overflow-y: auto;">
+                        <h3 class="mb-4 flex items-center gap-2" style="font-size: 1.2rem;"><i data-lucide="settings"></i> Configurações</h3>
                         
                         <div class="flex flex-col gap-4">
                             <!-- Visual -->
-                            <div class="flex-col gap-2 border-b" style="border-bottom: 1px solid var(--color-sub); padding-bottom: 1rem;">
-                                <h4 style="font-size: 0.9rem;">Visual & UX</h4>
-                                <label class="flex items-center gap-2" style="font-size: 0.85rem;">
+                            <div class="flex-col gap-2" style="border-bottom: 1px solid var(--color-sub); padding-bottom: 1rem;">
+                                <h4 style="font-size: 0.9rem; margin-bottom: 0.5rem;">Visual & UX</h4>
+                                <label class="flex items-center gap-2" style="font-size: 0.85rem; font-weight: 500;">
                                     <input type="checkbox" id="cfgLoadingBorder" ${form.settings.loadingBorder ? 'checked' : ''}>
-                                    Loading Border (Preenchimento das bordas)
+                                    Borda de Loading
                                 </label>
                             </div>
 
                             <!-- Telas -->
-                            <div class="flex-col gap-2 border-b" style="border-bottom: 1px solid var(--color-sub); padding-bottom: 1rem;">
-                                <h4 style="font-size: 0.9rem;">Telas Especiais</h4>
-                                <label class="flex items-center gap-2" style="font-size: 0.85rem;">
+                            <div class="flex-col gap-2" style="border-bottom: 1px solid var(--color-sub); padding-bottom: 1rem;">
+                                <h4 style="font-size: 0.9rem; margin-bottom: 0.5rem;">Telas Especiais</h4>
+                                <label class="flex items-center gap-2" style="font-size: 0.85rem; font-weight: 500; margin-bottom: 0.25rem;">
                                     <input type="checkbox" id="cfgWelcome" ${form.settings.welcomeScreen ? 'checked' : ''}> Tela de Bem-vindo
                                 </label>
-                                <label class="flex items-center gap-2" style="font-size: 0.85rem;">
+                                <label class="flex items-center gap-2" style="font-size: 0.85rem; font-weight: 500; margin-bottom: 0.5rem;">
                                     <input type="checkbox" id="cfgEnd" ${form.settings.endScreen ? 'checked' : ''}> Tela de Finalização
                                 </label>
-                                <input type="text" id="cfgRedirect" class="input-field" placeholder="Link de redirecionamento (opcional)" value="${form.settings.redirectLink}" style="font-size: 0.8rem; padding: 0.5rem;">
+                                <input type="text" id="cfgRedirect" class="input-field" placeholder="Redirecionamento URL" value="${form.settings.redirectLink}" style="font-size: 0.85rem; padding: 0.5rem;">
                             </div>
 
                             <!-- IA & Validação -->
-                            <div class="flex-col gap-2 border-b" style="border-bottom: 1px solid var(--color-sub); padding-bottom: 1rem;">
-                                <h4 style="font-size: 0.9rem;">Validação e IA</h4>
-                                <label class="flex items-center gap-2" style="font-size: 0.85rem;" title="Bloqueia respostas com apenas caracteres especiais ou números vagos">
+                            <div class="flex-col gap-2" style="border-bottom: 1px solid var(--color-sub); padding-bottom: 1rem;">
+                                <h4 style="font-size: 0.9rem; margin-bottom: 0.5rem;">Validação e IA</h4>
+                                <label class="flex items-center gap-2" style="font-size: 0.85rem; font-weight: 500;" title="Bloqueia respostas com apenas caracteres especiais ou números vagos">
                                     <input type="checkbox" id="cfgVague" ${form.settings.vagueDetector ? 'checked' : ''}> Detector de Respostas Vagas
                                 </label>
                             </div>
 
                             <!-- E-mails -->
                             <div class="flex-col gap-2">
-                                <h4 style="font-size: 0.9rem;">Disparo de E-mails</h4>
-                                <label class="flex items-center gap-2" style="font-size: 0.85rem;">
-                                    <input type="checkbox" id="cfgEmailClient" ${form.settings.emailClient ? 'checked' : ''}> E-mail de confirmação (Cliente)
+                                <h4 style="font-size: 0.9rem; margin-bottom: 0.5rem;">Disparo de E-mails</h4>
+                                <label class="flex items-center gap-2" style="font-size: 0.85rem; font-weight: 500; margin-bottom: 0.25rem;">
+                                    <input type="checkbox" id="cfgEmailClient" ${form.settings.emailClient ? 'checked' : ''}> E-mail para Cliente
                                 </label>
-                                <textarea id="cfgEmailClientText" class="input-field ${form.settings.emailClient ? '' : 'hidden'}" placeholder="Corpo do e-mail" style="font-size: 0.8rem; padding: 0.5rem; min-height: 60px;">${form.settings.emailClientText}</textarea>
+                                <textarea id="cfgEmailClientText" class="input-field ${form.settings.emailClient ? '' : 'hidden'}" placeholder="Texto do e-mail..." style="font-size: 0.85rem; padding: 0.5rem; min-height: 80px; margin-bottom: 0.5rem;">${form.settings.emailClientText}</textarea>
                                 
-                                <label class="flex items-center gap-2" style="font-size: 0.85rem; margin-top: 0.5rem;">
-                                    <input type="checkbox" id="cfgEmailStudio" ${form.settings.emailStudio ? 'checked' : ''}> Alerta de resposta (Studio)
+                                <label class="flex items-center gap-2" style="font-size: 0.85rem; font-weight: 500;">
+                                    <input type="checkbox" id="cfgEmailStudio" ${form.settings.emailStudio ? 'checked' : ''}> Alerta para o Studio
                                 </label>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
             <!-- Modal Banco de Questões -->
-            <div id="bankModal" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+            <div id="bankModal" class="modal-overlay hidden">
                 <div class="floating-card flex-col gap-4" style="width: 100%; max-width: 600px; max-height: 80vh;">
                     <div class="flex justify-between items-center">
                         <h3>Adicionar Perguntas</h3>
@@ -210,11 +209,11 @@ export const renderEditor = (container, formId) => {
             });
         });
 
-        bankModal.style.display = 'flex';
+        bankModal.classList.remove('hidden');
     });
 
     document.getElementById('closeBankModal').addEventListener('click', () => {
-        bankModal.style.display = 'none';
+        bankModal.classList.add('hidden');
     });
 
     // Save Form
