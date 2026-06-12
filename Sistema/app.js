@@ -5,6 +5,9 @@ import { renderQuestions } from './pages/questions.js';
 import { renderEditor } from './pages/editor.js';
 import { renderLiveForm } from './pages/liveform.js';
 import { renderFormsAI } from './pages/formsai.js';
+import { renderResponses } from './pages/responses.js';
+import { renderResponseDetail } from './pages/responsedetail.js';
+import { renderSettings } from './pages/settings.js';
 import { store } from './store.js';
 
 const app = document.getElementById('app');
@@ -42,6 +45,14 @@ const router = () => {
     } else if (path.startsWith('/forms/ai/')) {
         const id = path.split('/')[3];
         renderFormsAI(app, id);
+    } else if (path.startsWith('/forms/responses/')) {
+        const id = path.split('/')[3];
+        renderResponses(app, id);
+    } else if (path.startsWith('/response/')) {
+        const id = path.split('/')[2];
+        renderResponseDetail(app, id);
+    } else if (path === '/settings') {
+        renderSettings(app);
     } else {
         app.innerHTML = '<div class="flex items-center justify-center h-full w-full"><h2>Página não encontrada</h2></div>';
     }
