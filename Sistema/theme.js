@@ -57,41 +57,48 @@ html[data-theme="dark"] [style*="background: #DFDFE3"] {
 /* Page containers que usam #F0F0F2 como fundo de tela inteira */
 html[data-theme="dark"] .page-container[style*="#F0F0F2"] { background-color: #121214 !important; }
 
-/* Texto preto (#010101) -> claro */
+/* Texto preto (#010101) -> claro legível */
 html[data-theme="dark"] [style*="color: #010101"],
 html[data-theme="dark"] [style*="color:#010101"] {
-    color: #ECECEE !important;
+    color: #E8E8EC !important;
 }
 
-/* Fundos pretos (#010101) — botões primários, avatares — mantêm contraste invertido suave */
+/* Fundos pretos (#010101) — botões primários, avatares, itens ativos.
+   No dark eles ficam CLAROS (#F0F0F2) para manter o contraste invertido. */
 html[data-theme="dark"] [style*="background-color: #010101"],
 html[data-theme="dark"] [style*="background-color:#010101"],
 html[data-theme="dark"] [style*="background: #010101"] {
     background-color: #F0F0F2 !important;
 }
-/* Texto dentro de botões pretos (que era #F0F0F2) volta a ser escuro */
-html[data-theme="dark"] [style*="background-color: #010101"][style*="color: #F0F0F2"],
-html[data-theme="dark"] [style*="background-color:#010101"] {
+/* Conteúdo DENTRO de fundos pretos (que era claro) volta a ser escuro,
+   incluindo ícones — o quadrado de seleção é branco, então ícone preto. */
+html[data-theme="dark"] [style*="background-color: #010101"] *,
+html[data-theme="dark"] [style*="background-color:#010101"] * {
     color: #121214 !important;
 }
-html[data-theme="dark"] [style*="background-color: #010101"] i,
-html[data-theme="dark"] [style*="background-color: #010101"] span { color: #121214 !important; }
+html[data-theme="dark"] [style*="background-color: #010101"] svg,
+html[data-theme="dark"] [style*="background-color:#010101"] svg {
+    color: #121214 !important;
+    stroke: #121214 !important;
+}
 
-/* Ícones lucide pretos */
-html[data-theme="dark"] [style*="color: #010101"] svg { color: #ECECEE !important; }
+/* Item ativo da sidebar (rail-icon--active tem fundo claro): ícone preto */
+html[data-theme="dark"] .rail-icon--active svg { color: #121214 !important; stroke: #121214 !important; }
+html[data-theme="dark"] .nav-item--active,
+html[data-theme="dark"] .nav-item--active * { color: #121214 !important; }
+html[data-theme="dark"] .nav-item--active svg { stroke: #121214 !important; }
 
-/* Bordas escuras translúcidas ficam claras translúcidas */
-html[data-theme="dark"] [style*="rgba(1,1,1,0.08)"] { border-color: rgba(255,255,255,0.10) !important; }
-html[data-theme="dark"] [style*="rgba(1,1,1,0.06)"] { border-color: rgba(255,255,255,0.08) !important; }
-html[data-theme="dark"] [style*="rgba(1,1,1,0.10)"] { border-color: rgba(255,255,255,0.12) !important; }
+/* Ícones lucide pretos genéricos -> claros (quando NÃO estão em fundo claro) */
+html[data-theme="dark"] [style*="color: #010101"] svg { color: #E8E8EC !important; stroke: #E8E8EC !important; }
 
-/* Textos muted (rgba preto) */
-html[data-theme="dark"] [style*="color: rgba(1,1,1,0.45)"],
-html[data-theme="dark"] [style*="color: rgba(1,1,1,0.5)"],
-html[data-theme="dark"] [style*="color: rgba(1,1,1,0.4)"],
-html[data-theme="dark"] [style*="color: rgba(1,1,1,0.35)"],
-html[data-theme="dark"] [style*="color: rgba(1,1,1,0.6)"] {
-    color: rgba(240,240,242,0.5) !important;
+/* Texto muted (rgba preto) -> cinza claro legível dentro dos cards */
+html[data-theme="dark"] [style*="rgba(1,1,1,0.6)"],
+html[data-theme="dark"] [style*="rgba(1,1,1,0.5)"],
+html[data-theme="dark"] [style*="rgba(1,1,1,0.45)"],
+html[data-theme="dark"] [style*="rgba(1,1,1,0.4)"],
+html[data-theme="dark"] [style*="rgba(1,1,1,0.35)"],
+html[data-theme="dark"] [style*="rgba(1,1,1,0.3)"] {
+    color: rgba(232,232,236,0.6) !important;
 }
 
 /* Borda 1px sólida #DFDFE3 */

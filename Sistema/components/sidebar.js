@@ -46,10 +46,10 @@ export const renderSidebar = (container, currentPath) => {
     const navHTML = NAV_ITEMS.map((item, i) => {
         const isActive = item.match(currentPath);
         const railIcon = isActive
-            ? `<div class="rail-icon rail-icon--active" data-href="${item.href}" title="${item.label}">
+            ? `<div class="rail-icon rail-icon--active" data-href="${item.href}" data-tip="${item.label}">
                    <i data-lucide="${item.icon}" style="width:20px;height:20px;color:#010101;stroke-width:2px;"></i>
                </div>`
-            : `<div class="rail-icon" data-href="${item.href}" title="${item.label}">
+            : `<div class="rail-icon" data-href="${item.href}" data-tip="${item.label}">
                    <i data-lucide="${item.icon}" style="width:20px;height:20px;color:#010101;stroke-width:2px;"></i>
                </div>`;
 
@@ -118,15 +118,15 @@ export const renderSidebar = (container, currentPath) => {
                 <div style="margin-top: auto; display: flex; flex-direction: column; gap: 4px; width: 100%; align-items: center;">
                     <div style="width: 32px; border-top: 1px solid rgba(1,1,1,0.10); margin-bottom: 4px;"></div>
 
-                    <a href="#/settings" class="rail-icon ${currentPath === '/settings' ? 'rail-icon--active' : ''}" title="Configurações">
+                    <a href="#/settings" class="rail-icon ${currentPath === '/settings' ? 'rail-icon--active' : ''}" data-tip="Configurações">
                         <i data-lucide="settings" style="width:20px;height:20px;color:#010101;stroke-width:2px;"></i>
                     </a>
 
-                    <button id="btn-theme-toggle" class="rail-icon" title="${theme.get() === 'dark' ? 'Modo claro' : 'Modo escuro'}" style="background:none;border:none;cursor:pointer;">
+                    <button id="btn-theme-toggle" class="rail-icon" data-tip="${theme.get() === 'dark' ? 'Modo claro' : 'Modo escuro'}" style="background:none;border:none;cursor:pointer;">
                         <i data-lucide="${theme.get() === 'dark' ? 'sun' : 'moon'}" style="width:20px;height:20px;color:#010101;stroke-width:2px;"></i>
                     </button>
 
-                    <button id="btn-logout" class="rail-icon" title="Sair" style="background:none;border:none;cursor:pointer;">
+                    <button id="btn-logout" class="rail-icon" data-tip="Sair" style="background:none;border:none;cursor:pointer;">
                         <i data-lucide="log-out" style="width:20px;height:20px;color:#010101;stroke-width:2px;"></i>
                     </button>
                 </div>
@@ -192,14 +192,39 @@ export const renderSidebar = (container, currentPath) => {
                 border-radius: 10px;
                 display: flex; align-items: center; justify-content: center;
                 cursor: pointer; opacity: 0.55;
-                transition: opacity 0.15s, background 0.15s;
+                transition: opacity 0.12s, background 0.12s;
                 text-decoration: none;
+                position: relative;
             }
             .rail-icon:hover { opacity: 1; background: rgba(1,1,1,0.06); }
             .rail-icon--active {
                 background-color: #F0F0F2;
                 border: 1px solid rgba(1,1,1,0.10);
                 opacity: 1;
+            }
+            /* Tooltip instantâneo (substitui o title nativo lento) */
+            .rail-icon[data-tip]::after {
+                content: attr(data-tip);
+                position: absolute;
+                left: calc(100% + 10px);
+                top: 50%;
+                transform: translateY(-50%) translateX(-4px);
+                background: #010101;
+                color: #F0F0F2;
+                font-size: 12px;
+                font-weight: 500;
+                font-family: 'Instrument Sans', sans-serif;
+                padding: 5px 10px;
+                border-radius: 8px;
+                white-space: nowrap;
+                pointer-events: none;
+                opacity: 0;
+                transition: opacity 0.12s ease, transform 0.12s ease;
+                z-index: 200;
+            }
+            .rail-icon[data-tip]:hover::after {
+                opacity: 1;
+                transform: translateY(-50%) translateX(0);
             }
             .nav-item {
                 display: flex; align-items: center; gap: 12px;

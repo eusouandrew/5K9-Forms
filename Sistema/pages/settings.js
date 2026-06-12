@@ -1,6 +1,11 @@
 import { renderSidebar } from '../components/sidebar.js';
+import { store } from '../store.js';
+import { theme } from '../theme.js';
 
 export const renderSettings = (container) => {
+
+    const user = store.getUser() || { name: 'Usuário', email: 'usuario@5k9.studio' };
+    const initials = user.name.split(' ').map(s => s.charAt(0)).slice(0,2).join('').toUpperCase() || '?';
 
     const renderLayout = () => {
         container.innerHTML = `
@@ -21,51 +26,21 @@ export const renderSettings = (container) => {
                             
                             <!-- LEFT COLUMN (Nav) -->
                             <div style="width: 240px; background-color: #DFDFE3; border-radius: 16px; border: 1px solid rgba(1,1,1,0.08); padding: 16px; display: flex; flex-direction: column; flex-shrink: 0;">
-                                
+
                                 <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: rgba(1,1,1,0.45); margin-bottom: 8px; padding-left: 8px;">CONTA</div>
                                 <div style="display: flex; flex-direction: column; gap: 4px;">
-                                    <div class="nav-item active">
+                                    <div class="nav-item active" data-section="perfil">
                                         <div class="active-accent"></div>
                                         <i data-lucide="user" style="width: 18px; height: 18px;"></i>
                                         <span>Perfil</span>
                                     </div>
-                                    <div class="nav-item">
-                                        <i data-lucide="shield" style="width: 18px; height: 18px;"></i>
-                                        <span>Segurança</span>
-                                    </div>
-                                    <div class="nav-item">
+                                    <div class="nav-item" data-section="notificacoes">
                                         <i data-lucide="bell" style="width: 18px; height: 18px;"></i>
                                         <span>Notificações</span>
                                     </div>
-                                </div>
-
-                                <div class="nav-divider"></div>
-                                <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: rgba(1,1,1,0.45); margin-bottom: 8px; padding-left: 8px;">WORKSPACE</div>
-                                <div style="display: flex; flex-direction: column; gap: 4px;">
-                                    <div class="nav-item">
-                                        <i data-lucide="users" style="width: 18px; height: 18px;"></i>
-                                        <span>Membros</span>
-                                    </div>
-                                    <div class="nav-item">
-                                        <i data-lucide="key" style="width: 18px; height: 18px;"></i>
-                                        <span>Permissões</span>
-                                    </div>
-                                    <div class="nav-item">
-                                        <i data-lucide="plug" style="width: 18px; height: 18px;"></i>
-                                        <span>Integrações</span>
-                                    </div>
-                                </div>
-
-                                <div class="nav-divider"></div>
-                                <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: rgba(1,1,1,0.45); margin-bottom: 8px; padding-left: 8px;">FATURAMENTO</div>
-                                <div style="display: flex; flex-direction: column; gap: 4px;">
-                                    <div class="nav-item">
-                                        <i data-lucide="credit-card" style="width: 18px; height: 18px;"></i>
-                                        <span>Plano atual</span>
-                                    </div>
-                                    <div class="nav-item">
-                                        <i data-lucide="file-text" style="width: 18px; height: 18px;"></i>
-                                        <span>Histórico</span>
+                                    <div class="nav-item" data-section="aparencia">
+                                        <i data-lucide="palette" style="width: 18px; height: 18px;"></i>
+                                        <span>Aparência</span>
                                     </div>
                                 </div>
 
@@ -86,11 +61,11 @@ export const renderSettings = (container) => {
                                     <!-- AVATAR ROW -->
                                     <div style="display: flex; align-items: center; gap: 16px;">
                                         <div style="width: 72px; height: 72px; border-radius: 50%; background-color: #F0F0F2; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; color: #010101;">
-                                            JS
+                                            ${initials}
                                         </div>
                                         <div style="display: flex; flex-direction: column; gap: 4px;">
-                                            <div style="font-size: 15px; font-weight: 600; color: #010101;">João Silva</div>
-                                            <div style="font-size: 13px; color: rgba(1,1,1,0.45);">joao.silva@email.com</div>
+                                            <div style="font-size: 15px; font-weight: 600; color: #010101;">${user.name}</div>
+                                            <div style="font-size: 13px; color: rgba(1,1,1,0.45);">${user.email}</div>
                                             <div style="display: flex; align-items: center; gap: 12px; margin-top: 4px;">
                                                 <button class="ghost-btn" style="height: 32px; border-radius: 10px; font-size: 12px; padding: 0 12px;">Alterar foto</button>
                                                 <button style="background: none; border: none; font-size: 12px; color: rgba(1,1,1,0.4); cursor: pointer; padding: 0; transition: color 0.2s;" class="remove-btn-hover">Remover</button>
@@ -100,9 +75,9 @@ export const renderSettings = (container) => {
 
                                     <!-- FIELD ROWS -->
                                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                                        ${renderField('Nome completo', 'João Silva')}
-                                        ${renderField('E-mail', 'joao.silva@email.com', 'email')}
-                                        ${renderField('Cargo', 'Product Manager')}
+                                        ${renderField('Nome completo', user.name)}
+                                        ${renderField('E-mail', user.email, 'email')}
+                                        ${renderField('Cargo', 'Membro')}
                                         ${renderField('Empresa', '5K9 Studio')}
                                     </div>
 
@@ -267,19 +242,56 @@ export const renderSettings = (container) => {
         renderSidebar(document.getElementById('sidebar-container'), '/settings');
         if (window.lucide) lucide.createIcons();
 
-        // Add Toggle Interactivity
+        // Toggle interativo
         const toggles = container.querySelectorAll('.toggle-switch');
         toggles.forEach(t => {
             t.addEventListener('click', () => {
-                if (t.classList.contains('on')) {
-                    t.classList.remove('on');
-                    t.classList.add('off');
-                } else {
-                    t.classList.remove('off');
-                    t.classList.add('on');
+                t.classList.toggle('on');
+                t.classList.toggle('off');
+            });
+        });
+
+        // Troca de seção no menu lateral (visual: marca ativo)
+        const navItems = container.querySelectorAll('.nav-item[data-section]');
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                navItems.forEach(n => {
+                    n.classList.remove('active');
+                    const acc = n.querySelector('.active-accent');
+                    if (acc) acc.remove();
+                });
+                item.classList.add('active');
+                if (!item.querySelector('.active-accent')) {
+                    const acc = document.createElement('div');
+                    acc.className = 'active-accent';
+                    item.prepend(acc);
+                }
+                const section = item.dataset.section;
+                if (section === 'aparencia') {
+                    // Alterna o tema diretamente
+                    const isDark = theme.get() === 'dark';
+                    if (confirm(`Tema atual: ${isDark ? 'escuro' : 'claro'}. Deseja alternar?`)) {
+                        theme.toggle();
+                        renderLayout();
+                    }
                 }
             });
         });
+
+        // Salvar alterações de perfil
+        const saveBtn = container.querySelector('.save-pill-btn');
+        if (saveBtn) {
+            saveBtn.addEventListener('click', () => {
+                const inputs = container.querySelectorAll('.field-input');
+                const newName = inputs[0]?.value?.trim();
+                const newEmail = inputs[1]?.value?.trim();
+                if (newName && newEmail) {
+                    store.setUser({ ...user, name: newName, email: newEmail });
+                    alert('Alterações salvas!');
+                    renderLayout();
+                }
+            });
+        }
     };
 
     const renderField = (label, value, type="text") => {

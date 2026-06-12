@@ -50,9 +50,9 @@ export const renderEditor = (container, formId) => {
                     </div>
 
                     <div style="display: flex; background-color: transparent; border: 1px solid #DFDFE3; border-radius: 10px; height: 32px; align-items: center; padding: 2px;">
-                        <button class="tab-btn active" style="height: 100%; padding: 0 16px; border-radius: 8px; background-color: #010101; color: #F0F0F2; font-size: 13px; font-weight: 600; border: none; cursor: pointer;">Construtor</button>
-                        <button class="tab-btn" style="height: 100%; padding: 0 16px; border-radius: 8px; background-color: transparent; color: #010101; font-size: 13px; font-weight: 400; border: none; cursor: pointer;">Configurações</button>
-                        <button class="tab-btn" style="height: 100%; padding: 0 16px; border-radius: 8px; background-color: transparent; color: #010101; font-size: 13px; font-weight: 400; border: none; cursor: pointer;">Pré-visualização</button>
+                        <button id="tab-construtor" class="tab-btn active" style="height: 100%; padding: 0 16px; border-radius: 8px; background-color: #010101; color: #F0F0F2; font-size: 13px; font-weight: 600; border: none; cursor: pointer;">Construtor</button>
+                        <button id="tab-config" class="tab-btn" style="height: 100%; padding: 0 16px; border-radius: 8px; background-color: transparent; color: #010101; font-size: 13px; font-weight: 400; border: none; cursor: pointer;">Configurações</button>
+                        <button id="tab-preview" class="tab-btn" style="height: 100%; padding: 0 16px; border-radius: 8px; background-color: transparent; color: #010101; font-size: 13px; font-weight: 400; border: none; cursor: pointer;">Pré-visualização</button>
                     </div>
 
                     <div style="display: flex; gap: 12px; width: 260px; justify-content: flex-end;">
@@ -63,7 +63,7 @@ export const renderEditor = (container, formId) => {
                 </div>
 
                 <!-- 3 PANELS -->
-                <div style="display: flex; flex: 1; gap: 16px; overflow: hidden;">
+                <div id="editor-panels" style="display: flex; flex: 1; gap: 16px; overflow: hidden; min-width: 0;">
                     
                     <!-- LEFT PANEL: CAMPOS -->
                     <div style="width: 220px; background-color: #DFDFE3; border-radius: 16px; border: 1px solid rgba(1,1,1,0.08); display: flex; flex-direction: column; overflow: hidden;">
@@ -82,7 +82,7 @@ export const renderEditor = (container, formId) => {
                     </div>
 
                     <!-- CENTER CANVAS -->
-                    <div style="flex: 1; background-color: #F0F0F2; border-radius: 16px; border: 1px solid #DFDFE3; position: relative; display: flex; flex-direction: column; overflow: hidden;">
+                    <div style="flex: 1; min-width: 0; background-color: #F0F0F2; border-radius: 16px; border: 1px solid #DFDFE3; position: relative; display: flex; flex-direction: column; overflow: hidden;">
                         <div id="drop-zone" style="flex: 1; padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; padding-bottom: 60px;">
                             <!-- Populated by JS -->
                         </div>
@@ -423,6 +423,124 @@ export const renderEditor = (container, formId) => {
 
         document.getElementById('editor-form-title').addEventListener('blur', (e) => {
             if(!e.target.value.trim()) e.target.value = 'Novo Formulário';
+        });
+
+        // ── TABS ──
+        const tabConstrutor = document.getElementById('tab-construtor');
+        const tabConfig     = document.getElementById('tab-config');
+        const tabPreview    = document.getElementById('tab-preview');
+
+        const setActiveTab = (btn) => {
+            [tabConstrutor, tabConfig].forEach(b => {
+                const active = b === btn;
+                b.style.backgroundColor = active ? '#010101' : 'transparent';
+                b.style.color = active ? '#F0F0F2' : '#010101';
+                b.style.fontWeight = active ? '600' : '400';
+                b.classList.toggle('active', active);
+            });
+        };
+
+        // Construtor: volta para a visão padrão
+        tabConstrutor.addEventListener('click', () => {
+            setActiveTab(tabConstrutor);
+            renderBuilderView();
+        });
+
+        // Configurações: troca o conteúdo central pelo painel de settings
+        tabConfig.addEventListener('click', () => {
+            setActiveTab(tabConfig);
+            renderSettingsView();
+        });
+
+        // Pré-visualização: salva e abre o formulário público em nova aba
+        tabPreview.addEventListener('click', () => {
+            form.title = document.getElementById('editor-form-title').value;
+            if (!form.questions || form.questions.length === 0) {
+                alert('Adicione ao menos uma pergunta antes de pré-visualizar.');
+                return;
+            }
+            store.saveForm(form);
+            if (formId === 'new') {
+                window.location.hash = `/forms/edit/${form.id}`;
+            }
+            // Abre o liveform em nova aba
+            const url = `${window.location.origin}${window.location.pathname}#/f/${form.id}`;
+            window.open(url, '_blank');
+        });
+    };
+
+    // Re-renderiza a visão do construtor (3 painéis)
+    const renderBuilderView = () => {
+        renderLayout();
+    };
+
+    // Renderiza a visão de Configurações do formulário dentro do editor
+    const renderSettingsView = () => {
+        const panelsRow = container.querySelector('#editor-panels');
+        if (!panelsRow) return;
+        panelsRow.innerHTML = `
+            <div style="flex: 1; background-color: #F0F0F2; border-radius: 16px; border: 1px solid #DFDFE3; overflow-y: auto; padding: 32px; display: flex; justify-content: center;">
+                <div style="width: 100%; max-width: 640px; display: flex; flex-direction: column; gap: 24px;">
+
+                    <div>
+                        <h3 style="font-size: 18px; font-weight: 700; color: #010101; margin: 0 0 4px 0;">Configurações do formulário</h3>
+                        <p style="font-size: 13px; color: rgba(1,1,1,0.45); margin: 0;">Ajustes de comportamento e finalização.</p>
+                    </div>
+
+                    <!-- Loading border toggle -->
+                    <div style="background-color: #DFDFE3; border-radius: 12px; border: 1px solid rgba(1,1,1,0.08); padding: 16px; display: flex; align-items: center; justify-content: space-between;">
+                        <div>
+                            <div style="font-size: 14px; font-weight: 500; color: #010101;">Contorno de progresso animado</div>
+                            <div style="font-size: 12px; color: rgba(1,1,1,0.45); margin-top: 2px;">Preenche as bordas da tela conforme o usuário responde.</div>
+                        </div>
+                        <label class="ed-switch">
+                            <input type="checkbox" id="set-loading-border" ${form.settings?.loadingBorder !== false ? 'checked' : ''}>
+                            <span class="ed-slider"></span>
+                        </label>
+                    </div>
+
+                    <!-- Detector de vagas -->
+                    <div style="background-color: #DFDFE3; border-radius: 12px; border: 1px solid rgba(1,1,1,0.08); padding: 16px; display: flex; align-items: center; justify-content: space-between;">
+                        <div>
+                            <div style="font-size: 14px; font-weight: 500; color: #010101;">Detector de respostas vagas</div>
+                            <div style="font-size: 12px; color: rgba(1,1,1,0.45); margin-top: 2px;">Sinaliza respostas com apenas símbolos ou números sem sentido.</div>
+                        </div>
+                        <label class="ed-switch">
+                            <input type="checkbox" id="set-vague" ${form.settings?.vagueDetector ? 'checked' : ''}>
+                            <span class="ed-slider"></span>
+                        </label>
+                    </div>
+
+                    <!-- Redirect -->
+                    <div style="background-color: #DFDFE3; border-radius: 12px; border: 1px solid rgba(1,1,1,0.08); padding: 16px;">
+                        <div style="font-size: 14px; font-weight: 500; color: #010101; margin-bottom: 8px;">Link de redirecionamento</div>
+                        <div style="font-size: 12px; color: rgba(1,1,1,0.45); margin-bottom: 12px;">Para onde enviar o respondente após concluir (opcional).</div>
+                        <input type="url" id="set-redirect" value="${form.settings?.redirectUrl || ''}" placeholder="https://..." style="width: 100%; height: 40px; border-radius: 10px; background-color: #F0F0F2; border: 1px solid #DFDFE3; padding: 0 12px; font-size: 13px; font-family: 'Instrument Sans'; color: #010101; outline: none;">
+                    </div>
+
+                    <button id="save-settings-btn" style="align-self: flex-end; height: 40px; padding: 0 20px; border-radius: 100px; background-color: #010101; color: #F0F0F2; font-size: 13px; font-weight: 600; border: none; cursor: pointer;">Salvar configurações</button>
+
+                </div>
+            </div>
+            <style>
+                .ed-switch { position: relative; display: inline-block; width: 40px; height: 22px; flex-shrink: 0; }
+                .ed-switch input { opacity: 0; width: 0; height: 0; }
+                .ed-slider { position: absolute; cursor: pointer; inset: 0; background-color: rgba(1,1,1,0.15); border-radius: 100px; transition: 0.2s; }
+                .ed-slider:before { content: ""; position: absolute; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: #F0F0F2; border-radius: 50%; transition: 0.2s; }
+                .ed-switch input:checked + .ed-slider { background-color: #7F00E1; }
+                .ed-switch input:checked + .ed-slider:before { transform: translateX(18px); }
+            </style>
+        `;
+
+        document.getElementById('save-settings-btn').addEventListener('click', () => {
+            form.settings = form.settings || {};
+            form.settings.loadingBorder = document.getElementById('set-loading-border').checked;
+            form.settings.vagueDetector = document.getElementById('set-vague').checked;
+            form.settings.redirectUrl = document.getElementById('set-redirect').value.trim();
+            form.title = document.getElementById('editor-form-title').value;
+            store.saveForm(form);
+            alert('Configurações salvas!');
+            if (formId === 'new') window.location.hash = `/forms/edit/${form.id}`;
         });
     };
 
