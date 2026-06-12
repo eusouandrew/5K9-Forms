@@ -80,7 +80,7 @@ export const renderSidebar = (container, currentPath) => {
             background: transparent;
         "></div>
 
-        <div id="sidebar-wrapper" style="
+        <div id="sidebar-wrapper" class="${isExpanded ? 'sidebar-expanded' : 'sidebar-collapsed'}" style="
             position: fixed; top: 0; left: 0; z-index: 100;
             display: flex;
             height: calc(100vh - 32px);
@@ -222,7 +222,7 @@ export const renderSidebar = (container, currentPath) => {
                 transition: opacity 0.12s ease, transform 0.12s ease;
                 z-index: 200;
             }
-            .rail-icon[data-tip]:hover::after {
+            .sidebar-collapsed .rail-icon[data-tip]:hover::after {
                 opacity: 1;
                 transform: translateY(-50%) translateX(0);
             }
