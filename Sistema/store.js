@@ -7,7 +7,17 @@ export const store = {
     getQuestions: () => JSON.parse(localStorage.getItem('5k9_questions')) || [],
     saveQuestion: (question) => {
         const q = store.getQuestions();
-        q.push({...question, id: crypto.randomUUID()});
+        const index = q.findIndex(x => x.id === question.id);
+        if (index > -1) {
+            q[index] = question;
+        } else {
+            question.id = question.id || crypto.randomUUID();
+            q.push(question);
+        }
+        localStorage.setItem('5k9_questions', JSON.stringify(q));
+    },
+    deleteQuestion: (id) => {
+        const q = store.getQuestions().filter(x => x.id !== id);
         localStorage.setItem('5k9_questions', JSON.stringify(q));
     },
     
