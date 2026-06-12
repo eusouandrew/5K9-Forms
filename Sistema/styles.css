@@ -516,6 +516,35 @@ nav {
     animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+/* ====== PAGE TRANSITIONS (elimina o "salto" entre rotas) ====== */
+#app {
+    transition: opacity 0.18s ease, transform 0.18s ease;
+}
+#app.page-leaving {
+    opacity: 0;
+    transform: translateY(4px);
+}
+#app.page-entering {
+    animation: pageEnter 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes pageEnter {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Suaviza o hover de cards e itens em geral */
+.form-card, .nav-item, .rail-icon, .menu-item {
+    transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Respeita usuários que preferem menos movimento */
+@media (prefers-reduced-motion: reduce) {
+    #app, #app.page-entering, .animate-fade-in {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+
 /* Modal Overlay styling */
 .modal-overlay {
     position: fixed;

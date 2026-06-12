@@ -154,7 +154,7 @@ export const renderResponses = (container, formId) => {
                                             <a href="#/response/${r.id}" style="background: transparent; border: 1px solid #DFDFE3; border-radius: 8px; height: 28px; padding: 0 10px; font-size: 11px; font-family: 'Instrument Sans'; font-weight: 500; color: #010101; text-decoration: none; display: flex; align-items: center; justify-content: center; cursor: pointer;">
                                                 Ver
                                             </a>
-                                            <button style="background: none; border: none; padding: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center;" class="trash-action">
+                                            <button data-response-id="${r.id}" style="background: none; border: none; padding: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center;" class="trash-action">
                                                 <i data-lucide="trash-2" style="width: 16px; height: 16px; color: rgba(1,1,1,0.3); transition: color 0.2s;"></i>
                                             </button>
                                         </div>
@@ -260,6 +260,17 @@ export const renderResponses = (container, formId) => {
 
         renderSidebar(document.getElementById('sidebar-container'), window.location.hash.slice(1) || '/');
         if (window.lucide) lucide.createIcons();
+
+        // Listener: excluir resposta
+        container.querySelectorAll('.trash-action[data-response-id]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const rid = btn.dataset.responseId;
+                if (confirm('Tem certeza que deseja excluir esta resposta? Esta ação não pode ser desfeita.')) {
+                    store.deleteResponse(formId, rid);
+                    renderLayout();
+                }
+            });
+        });
     };
 
     renderLayout();

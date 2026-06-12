@@ -1,4 +1,5 @@
 import { store } from '../store.js';
+import { theme } from '../theme.js';
 
 // Mapa de rotas reais do sistema
 const NAV_ITEMS = [
@@ -120,6 +121,10 @@ export const renderSidebar = (container, currentPath) => {
                     <a href="#/settings" class="rail-icon ${currentPath === '/settings' ? 'rail-icon--active' : ''}" title="Configurações">
                         <i data-lucide="settings" style="width:20px;height:20px;color:#010101;stroke-width:2px;"></i>
                     </a>
+
+                    <button id="btn-theme-toggle" class="rail-icon" title="${theme.get() === 'dark' ? 'Modo claro' : 'Modo escuro'}" style="background:none;border:none;cursor:pointer;">
+                        <i data-lucide="${theme.get() === 'dark' ? 'sun' : 'moon'}" style="width:20px;height:20px;color:#010101;stroke-width:2px;"></i>
+                    </button>
 
                     <button id="btn-logout" class="rail-icon" title="Sair" style="background:none;border:none;cursor:pointer;">
                         <i data-lucide="log-out" style="width:20px;height:20px;color:#010101;stroke-width:2px;"></i>
@@ -263,6 +268,17 @@ export const renderSidebar = (container, currentPath) => {
         logoutBtn.addEventListener('click', () => {
             store.logout();
             window.location.hash = '/login';
+        });
+    }
+
+    // Toggle de tema (claro/escuro)
+    const themeBtn = container.querySelector('#btn-theme-toggle');
+    if (themeBtn) {
+        themeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            theme.toggle();
+            renderSidebar(container, currentPath);
+            setTimeout(() => { if (window.lucide) lucide.createIcons(); }, 0);
         });
     }
 

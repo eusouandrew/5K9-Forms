@@ -22,12 +22,12 @@ export const renderHeader = (container, title) => {
                 </div>
 
                 <!-- Action icons -->
-                <button class="btn-icon-header" title="Notificações">
+                <button class="btn-icon-header" title="Notificações" onclick="alert('Você não tem novas notificações.')">
                     <i data-lucide="bell" style="width: 18px; height: 18px;"></i>
                 </button>
-                <button class="btn-icon-header" title="Configurações do Sistema">
+                <a href="#/settings" class="btn-icon-header" title="Configurações do Sistema" style="text-decoration:none;">
                     <i data-lucide="settings" style="width: 18px; height: 18px;"></i>
-                </button>
+                </a>
 
                 <!-- Users pill (Image 3 inspired) -->
                 <div class="users-pill-container" title="Usuários Ativos no Sistema">

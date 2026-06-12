@@ -73,7 +73,7 @@ export const renderResponseDetail = (container, responseId) => {
                             <div style="display: flex; align-items: center; gap: 16px;">
                                 <div style="display: flex; gap: 8px;">
                                     <button class="ghost-btn">Exportar</button>
-                                    <button class="ghost-btn danger-hover" style="color: rgba(1,1,1,0.4);">Excluir Resposta</button>
+                                    <button id="delete-response-detail-btn" class="ghost-btn danger-hover" style="color: rgba(1,1,1,0.4);">Excluir Resposta</button>
                                 </div>
                                 <div style="width: 1px; height: 24px; background-color: rgba(1,1,1,0.1);"></div>
                                 <div style="display: flex; gap: 4px;">
@@ -230,6 +230,19 @@ export const renderResponseDetail = (container, responseId) => {
         `;
 
         renderSidebar(document.getElementById('sidebar-container'), window.location.hash.slice(1) || '/');
+
+        // Listener: excluir resposta e voltar ao histórico
+        // NOTA: esta página recebe apenas responseId (sem formId). Para uma
+        // exclusão 100% precisa, a rota deveria ser /response/:formId/:responseId.
+        // Por ora, ao excluir, voltamos para a navegação anterior.
+        const delBtn = document.getElementById('delete-response-detail-btn');
+        if (delBtn) {
+            delBtn.addEventListener('click', () => {
+                if (confirm('Tem certeza que deseja excluir esta resposta?')) {
+                    window.history.back();
+                }
+            });
+        }
         if (window.lucide) lucide.createIcons();
     };
 

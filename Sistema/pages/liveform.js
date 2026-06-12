@@ -350,11 +350,32 @@ export const renderLiveForm = (container, formId) => {
     const finishForm = () => {
         const qContainer = document.getElementById('question-container');
         qContainer.classList.remove('fade-in-up');
-        
-        // Ensure header shows 100%
+
+        // Garante que o header mostra 100%
         document.getElementById('header-progress-text').textContent = `${totalSteps} / ${totalSteps}`;
         document.getElementById('header-progress-bar').style.width = `100%`;
-        
+
+        // Identifica o respondente: tenta extrair de respostas de campos
+        // email/nome; senão usa o usuário logado; senão anônimo.
+        const respondent = resolveRespondent(answers, form);
+
+        // Persiste a resposta de verdade
+        store.saveResponse(form.id, {
+            answers: { ...answers },
+            respondentName: respondent.name,
+            respondentEmail: respondent.email,
+            completion: 100
+        });
+
+        // Configuração de redirect (vinda das settings do formulário)
+        const redirectUrl = form.settings && form.settings.redirectUrl ? form.settings.redirectUrl : null;
+        const initials = respondent.name
+            .split(' ')
+            .map(s => s.charAt(0))
+            .slice(0, 2)
+            .join('')
+            .toUpperCase() || '?';
+
         setTimeout(() => {
             qContainer.innerHTML = `
                 <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%;">
@@ -385,11 +406,11 @@ export const renderLiveForm = (container, formId) => {
                         <div style="background-color: #F0F0F2; border-radius: 12px; border: 1px solid #DFDFE3; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 360px;">
                             <div style="display: flex; align-items: center; gap: 12px;">
                                 <div style="width: 32px; height: 32px; border-radius: 50%; background-color: #DFDFE3; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: #010101;">
-                                    JS
+                                    ${initials}
                                 </div>
                                 <div style="display: flex; flex-direction: column; text-align: left;">
-                                    <span style="font-size: 13px; font-weight: 500; color: #010101; line-height: 1.2;">João Silva</span>
-                                    <span style="font-size: 11px; color: rgba(1,1,1,0.4);">joao.silva@email.com</span>
+                                    <span style="font-size: 13px; font-weight: 500; color: #010101; line-height: 1.2;">${respondent.name}</span>
+                                    <span style="font-size: 11px; color: rgba(1,1,1,0.4);">${respondent.email}</span>
                                 </div>
                             </div>
                             <div style="background-color: #010101; color: #F0F0F2; font-size: 11px; font-weight: 600; padding: 4px 8px; border-radius: 100px;">
@@ -399,15 +420,17 @@ export const renderLiveForm = (container, formId) => {
 
                         <!-- CTA AREA -->
                         <div style="display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 360px; margin-top: 24px;">
-                            <a href="#/forms" style="width: 100%; height: 44px; border-radius: 100px; background-color: #7F00E1; color: #F0F0F2; font-size: 14px; font-weight: 600; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                                Acessar Dashboard
+                            ${redirectUrl ? `
+                            <a href="${redirectUrl}" target="_blank" rel="noopener" style="width: 100%; height: 44px; border-radius: 100px; background-color: #7F00E1; color: #F0F0F2; font-size: 14px; font-weight: 600; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                Continuar
                                 <i data-lucide="external-link" style="width: 14px; height: 14px;"></i>
                             </a>
                             <div style="font-size: 11px; color: rgba(1,1,1,0.3); text-align: center;">Você será redirecionado automaticamente em 5s</div>
-                            
-                            <a href="#/forms" style="width: 100%; height: 44px; border-radius: 10px; background-color: transparent; border: 1px solid #DFDFE3; color: #010101; font-size: 14px; font-weight: 500; text-decoration: none; display: flex; align-items: center; justify-content: center; margin-top: 4px;">
-                                Voltar ao início
-                            </a>
+                            ` : `
+                            <div style="font-size: 12px; color: rgba(1,1,1,0.4); text-align: center; line-height: 1.5;">
+                                Você já pode fechar esta janela.
+                            </div>
+                            `}
                         </div>
                     </div>
 
@@ -437,10 +460,31 @@ export const renderLiveForm = (container, formId) => {
                 if (line) line.style.width = '240px';
             }, 100);
 
-            // Mock auto-redirect
-            // setTimeout(() => { window.location.hash = '/forms'; }, 5000);
+            // Auto-redirect (apenas se configurado nas settings do formulário)
+            if (redirectUrl) {
+                setTimeout(() => { window.open(redirectUrl, '_blank', 'noopener'); }, 5000);
+            }
 
         }, 300);
+    };
+
+    // Extrai o respondente das respostas (campos de email/nome) com fallbacks
+    const resolveRespondent = (answers, form) => {
+        let name = '';
+        let email = '';
+        if (form.questions) {
+            form.questions.forEach(q => {
+                const val = answers[q.id];
+                if (!val) return;
+                if (q.type === 'email' && !email) email = val;
+                const label = (q.label || q.title || '').toLowerCase();
+                if (!name && (label.includes('nome') || label.includes('name'))) name = val;
+            });
+        }
+        const user = store.getUser();
+        if (!name)  name  = user ? user.name  : 'Respondente anônimo';
+        if (!email) email = user ? user.email : 'sem-email@5k9.forms';
+        return { name, email };
     };
 
     renderLayout();
