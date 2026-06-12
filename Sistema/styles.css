@@ -348,63 +348,102 @@ p {
 
 /* Sidebar Styling (Premium and retractable) */
 .sidebar {
-    background-color: var(--color-card-bg);
-    width: 240px;
-    border-right: 1px solid var(--color-sub);
-    height: 100vh;
-    padding: 1.5rem 1rem;
+    background-color: #F4F4F6;
+    width: 260px;
+    height: calc(100vh - 32px);
+    margin: 16px 0 16px 16px;
+    border-radius: 24px;
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    transition: width var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
     flex-shrink: 0;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.02);
 }
 
 .sidebar.collapsed {
-    width: 76px;
+    width: 80px;
     align-items: center;
+    border-radius: 40px;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem 1.5rem 0.5rem 1.5rem;
+    margin-bottom: 1.5rem;
+    transition: all var(--transition-speed);
+    width: 100%;
 }
 
 .sidebar.collapsed .logo-container {
-    justify-content: center;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 1.5rem 0 0.5rem 0;
 }
 
 .sidebar.collapsed .menu-item span {
+    opacity: 0;
+    width: 0;
     display: none;
 }
 
 .sidebar.collapsed .menu-item {
     justify-content: center;
-    padding: 0.75rem;
-    width: 44px;
-    height: 44px;
+    padding: 0;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+}
+
+nav {
+    padding: 0 1rem;
+}
+
+.sidebar > div:last-child {
+    padding: 0 1rem 1.5rem 1rem;
+}
+
+.sidebar.collapsed nav, .sidebar.collapsed > div:last-child {
+    padding: 0;
 }
 
 .menu-item {
-    padding: 0.75rem 1rem;
-    border-radius: var(--border-radius-md);
-    color: var(--color-contrast);
+    padding: 0.85rem 1rem;
+    border-radius: 12px;
+    color: #6e6e73;
     text-decoration: none;
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 1rem;
     transition: all 0.2s;
     font-weight: 600;
     font-size: 0.95rem;
+    white-space: nowrap;
 }
 
 .menu-item i {
-    width: 20px;
-    height: 20px;
+    width: 22px;
+    height: 22px;
+    stroke-width: 2px;
 }
 
 .menu-item:hover {
-    background-color: var(--color-main);
+    color: var(--color-contrast);
+    background-color: rgba(0,0,0,0.04);
 }
 
 .menu-item.active {
     background-color: var(--color-contrast);
     color: #fff;
+}
+
+.sidebar.collapsed .menu-item.active {
+    background-color: #fff;
+    color: var(--color-contrast);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
 /* Forms grid item card */
