@@ -168,6 +168,8 @@ export const renderForms = (container) => {
                                     <i data-lucide="more-vertical" style="width: 16px; height: 16px; color: rgba(1,1,1,0.4);"></i>
                                 </button>
                                 <div class="dropdown-menu">
+                                    <a href="#/forms/responses/${f.id}" class="dropdown-item"><i data-lucide="bar-chart-2" style="width: 14px; height: 14px;"></i> Ver Respostas</a>
+                                    <a href="#/forms/ai/${f.id}" class="dropdown-item" style="color: #7F00E1;"><i data-lucide="sparkles" style="width: 14px; height: 14px;"></i> Forms AI</a>
                                     <a href="#/forms/edit/${f.id}" class="dropdown-item"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i> Editar</a>
                                     <a href="#/f/${f.id}" target="_blank" class="dropdown-item"><i data-lucide="external-link" style="width: 14px; height: 14px;"></i> Abrir Live</a>
                                     <button class="dropdown-item danger delete-form-btn" data-id="${f.id}"><i data-lucide="trash-2" style="width: 14px; height: 14px;"></i> Excluir</button>
@@ -191,6 +193,8 @@ export const renderForms = (container) => {
                                         <i data-lucide="more-vertical" style="width: 16px; height: 16px; color: rgba(1,1,1,0.4);"></i>
                                     </button>
                                     <div class="dropdown-menu">
+                                        <a href="#/forms/responses/${f.id}" class="dropdown-item"><i data-lucide="bar-chart-2" style="width: 14px; height: 14px;"></i> Ver Respostas</a>
+                                        <a href="#/forms/ai/${f.id}" class="dropdown-item" style="color: #7F00E1;"><i data-lucide="sparkles" style="width: 14px; height: 14px;"></i> Forms AI</a>
                                         <a href="#/forms/edit/${f.id}" class="dropdown-item"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i> Editar</a>
                                         <a href="#/f/${f.id}" target="_blank" class="dropdown-item"><i data-lucide="external-link" style="width: 14px; height: 14px;"></i> Abrir Live</a>
                                         <button class="dropdown-item danger delete-form-btn" data-id="${f.id}"><i data-lucide="trash-2" style="width: 14px; height: 14px;"></i> Excluir</button>

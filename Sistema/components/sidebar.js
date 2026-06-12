@@ -27,9 +27,9 @@ export const renderSidebar = (container, currentPath) => {
 
                 <div style="margin-top: auto; display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: center;">
                     <div style="width: 32px; border-top: 1px solid rgba(1,1,1,0.08); margin: 8px 0;"></div>
-                    <div style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; opacity: 0.6; cursor: pointer;">
+                    <a href="#/settings" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; opacity: 0.6; cursor: pointer; text-decoration: none;">
                         <i data-lucide="settings" style="width: 20px; height: 20px; color: #010101;"></i>
-                    </div>
+                    </a>
                     <div style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; opacity: 0.6; cursor: pointer;">
                         <i data-lucide="log-out" style="width: 20px; height: 20px; color: #010101;"></i>
                     </div>

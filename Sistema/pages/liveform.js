@@ -351,21 +351,71 @@ export const renderLiveForm = (container, formId) => {
         const qContainer = document.getElementById('question-container');
         qContainer.classList.remove('fade-in-up');
         
-        // Fake saving
+        // Ensure header shows 100%
+        document.getElementById('header-progress-text').textContent = `${totalSteps} / ${totalSteps}`;
+        document.getElementById('header-progress-bar').style.width = `100%`;
+        
         setTimeout(() => {
             qContainer.innerHTML = `
-                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; max-width: 100%;">
-                    <div style="width: 64px; height: 64px; border-radius: 50%; background-color: #7F00E1; display: flex; align-items: center; justify-content: center; margin-bottom: 24px;">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#F0F0F2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                    </div>
-                    <h2 style="font-size: 32px; font-weight: 600; color: #010101; line-height: 1.3; margin: 0 0 16px 0;">
-                        Tudo Certo!
-                    </h2>
-                    <p style="font-size: 15px; color: rgba(1,1,1,0.5); line-height: 1.6; margin: 0 0 32px 0;">Suas respostas foram salvas com sucesso. Obrigado pela participação.</p>
+                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%;">
                     
-                    <a href="#/forms" style="height: 48px; padding: 0 32px; border-radius: 100px; background-color: #010101; color: #F0F0F2; font-size: 15px; font-weight: 600; text-decoration: none; display: flex; align-items: center; justify-content: center;">
-                        Voltar ao Studio
-                    </a>
+                    <!-- CENTERED CONFIRMATION CARD -->
+                    <div style="background-color: #DFDFE3; border-radius: 20px; border: 1px solid rgba(1,1,1,0.08); width: 100%; max-width: 520px; padding: 48px; position: relative; display: flex; flex-direction: column; align-items: center; text-align: center;">
+                        
+                        <!-- TOP ACCENT -->
+                        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 3px; background-color: #7F00E1; border-radius: 20px 20px 0 0;"></div>
+
+                        <!-- SUCCESS MARK -->
+                        <div style="width: 64px; height: 64px; border-radius: 50%; background-color: #010101; display: flex; align-items: center; justify-content: center; margin-bottom: 24px;">
+                            <i data-lucide="check" style="width: 28px; height: 28px; color: #F0F0F2;"></i>
+                        </div>
+                        
+                        <!-- ANIMATED LINE -->
+                        <div style="height: 1px; background-color: #7F00E1; width: 0; transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1); margin-bottom: 20px;" id="success-line"></div>
+
+                        <!-- HEADING -->
+                        <h2 style="font-size: 24px; font-weight: 700; color: #010101; margin: 0 0 12px 0;">Enviado com sucesso!</h2>
+                        
+                        <!-- SUBTITLE -->
+                        <p style="font-size: 14px; color: rgba(1,1,1,0.5); line-height: 1.65; max-width: 400px; margin: 0 0 20px 0;">
+                            Obrigado por preencher o formulário. Suas respostas foram registradas e em breve você receberá um e-mail de confirmação.
+                        </p>
+
+                        <!-- RESPONDENT SUMMARY -->
+                        <div style="background-color: #F0F0F2; border-radius: 12px; border: 1px solid #DFDFE3; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 360px;">
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="width: 32px; height: 32px; border-radius: 50%; background-color: #DFDFE3; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: #010101;">
+                                    JS
+                                </div>
+                                <div style="display: flex; flex-direction: column; text-align: left;">
+                                    <span style="font-size: 13px; font-weight: 500; color: #010101; line-height: 1.2;">João Silva</span>
+                                    <span style="font-size: 11px; color: rgba(1,1,1,0.4);">joao.silva@email.com</span>
+                                </div>
+                            </div>
+                            <div style="background-color: #010101; color: #F0F0F2; font-size: 11px; font-weight: 600; padding: 4px 8px; border-radius: 100px;">
+                                100% concluído
+                            </div>
+                        </div>
+
+                        <!-- CTA AREA -->
+                        <div style="display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 360px; margin-top: 24px;">
+                            <a href="#/forms" style="width: 100%; height: 44px; border-radius: 100px; background-color: #7F00E1; color: #F0F0F2; font-size: 14px; font-weight: 600; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                Acessar Dashboard
+                                <i data-lucide="external-link" style="width: 14px; height: 14px;"></i>
+                            </a>
+                            <div style="font-size: 11px; color: rgba(1,1,1,0.3); text-align: center;">Você será redirecionado automaticamente em 5s</div>
+                            
+                            <a href="#/forms" style="width: 100%; height: 44px; border-radius: 10px; background-color: transparent; border: 1px solid #DFDFE3; color: #010101; font-size: 14px; font-weight: 500; text-decoration: none; display: flex; align-items: center; justify-content: center; margin-top: 4px;">
+                                Voltar ao início
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- FLOATING BOTTOM NOTE -->
+                    <div style="font-size: 11px; color: rgba(1,1,1,0.25); margin-top: 16px;">
+                        5K9 Forms · Powered by 5K9 Studio
+                    </div>
+                    
                 </div>
             `;
             qContainer.classList.add('fade-in-up');
@@ -378,6 +428,18 @@ export const renderLiveForm = (container, formId) => {
             container.querySelector('.border-left').style.height = sizeStr;
 
             document.getElementById('step-dots').parentElement.style.display = 'none';
+
+            if (window.lucide) lucide.createIcons();
+
+            // Trigger animation
+            setTimeout(() => {
+                const line = document.getElementById('success-line');
+                if (line) line.style.width = '240px';
+            }, 100);
+
+            // Mock auto-redirect
+            // setTimeout(() => { window.location.hash = '/forms'; }, 5000);
+
         }, 300);
     };
 
