@@ -229,7 +229,7 @@ export const renderResponseDetail = (container, responseId) => {
             </style>
         `;
 
-        renderSidebar(document.getElementById('sidebar-container'), '/forms');
+        renderSidebar(document.getElementById('sidebar-container'), window.location.hash.slice(1) || '/');
         if (window.lucide) lucide.createIcons();
     };
 

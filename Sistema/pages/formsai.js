@@ -317,7 +317,7 @@ export const renderFormsAI = (container, formId) => {
             </style>
         `;
 
-        renderSidebar(document.getElementById('sidebar-container'), '/forms');
+        renderSidebar(document.getElementById('sidebar-container'), window.location.hash.slice(1) || '/');
         if (window.lucide) lucide.createIcons();
 
         // Action Menu dropdown behavior
