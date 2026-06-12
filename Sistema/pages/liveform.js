@@ -4,159 +4,382 @@ export const renderLiveForm = (container, formId) => {
     const form = store.getForm(formId);
     
     if (!form) {
-        container.innerHTML = '<div class="flex items-center justify-center h-full w-full"><h2>Formulário não encontrado</h2></div>';
+        container.innerHTML = `
+            <div style="display: flex; height: 100vh; background-color: #F0F0F2; font-family: 'Instrument Sans', sans-serif; align-items: center; justify-content: center; flex-direction: column;">
+                <h2>Formulário não encontrado</h2>
+                <a href="#/forms" style="color: #010101; text-decoration: underline; margin-top: 16px;">Voltar para Dashboard</a>
+            </div>
+        `;
         return;
     }
 
-    let currentIndex = form.settings.welcomeScreen ? -1 : 0;
-    const totalQuestions = form.questions.length;
-    const responses = {};
-
-    const updateLoadingBorder = () => {
-        const border = document.getElementById('liveLoadingBorder');
-        if (!border || !form.settings.loadingBorder) return;
-        
-        // Calcular progresso baseado nas perguntas (ignorando bem-vindo e fim)
-        let progress = 0;
-        if (currentIndex >= totalQuestions) progress = 100;
-        else if (currentIndex >= 0) progress = (currentIndex / totalQuestions) * 100;
-        
-        // O efeito visual do preenchimento da borda
-        // Como o CSS puro para preencher as bordas parcialmente é complexo usando apenas box-shadow,
-        // vamos simular com pseudoelementos ou div de overlay se for preciso.
-        // Simplificando, alteramos a opacidade/grossura ou um clip-path
-        border.style.clipPath = `polygon(0 0, 100% 0, 100% ${progress}%, 0 ${progress}%)`;
-    };
-
-    const renderQuestion = () => {
-        let content = '';
-
-        if (currentIndex === -1) {
-            content = `
-                <div class="flex flex-col items-center gap-6 animate-fade-in text-center" style="max-width: 600px; margin: auto;">
-                    <h1 style="font-size: 3rem; color: var(--color-contrast);">${form.settings.welcomeTitle || 'Bem-vindo'}</h1>
-                    <p style="font-size: 1.2rem; color: #555;">${form.settings.welcomeText || 'Aperte Start para começar o formulário.'}</p>
-                    <button id="nextBtn" class="btn primary" style="font-size: 1.2rem; padding: 1rem 2.5rem;">Start <i data-lucide="arrow-right"></i></button>
-                </div>
-            `;
-        } else if (currentIndex === totalQuestions) {
-            content = `
-                <div class="flex flex-col items-center gap-6 animate-fade-in text-center" style="max-width: 600px; margin: auto;">
-                    <h1 style="font-size: 3rem; color: var(--color-contrast);">${form.settings.endTitle || 'Obrigado!'}</h1>
-                    <p style="font-size: 1.2rem; color: #555;">${form.settings.endText || 'Suas respostas foram salvas com sucesso.'}</p>
-                    ${form.settings.redirectLink ? `<a href="${form.settings.redirectLink}" class="btn primary">Continuar</a>` : ''}
-                </div>
-            `;
-        } else {
-            const q = form.questions[currentIndex];
-            let inputHTML = '';
-            
-            // Simple renderer base on type
-            if (q.type === 'long_text') {
-                inputHTML = `<textarea id="qInput" class="input-field" style="min-height: 150px; font-size: 1.2rem;" placeholder="Sua resposta aqui...">${responses[q.id] || ''}</textarea>`;
-            } else if (q.type === 'yes_no') {
-                inputHTML = `
-                    <div class="flex gap-4 w-full">
-                        <button class="btn outline flex-1 opt-btn" style="font-size:1.5rem; padding: 2rem;" data-val="Sim">Sim</button>
-                        <button class="btn outline flex-1 opt-btn" style="font-size:1.5rem; padding: 2rem;" data-val="Não">Não</button>
-                    </div>
-                `;
-            } else {
-                inputHTML = `<input type="text" id="qInput" class="input-field" style="font-size: 1.5rem; padding: 1rem;" placeholder="Sua resposta" value="${responses[q.id] || ''}">`;
-            }
-
-            content = `
-                <div class="flex flex-col gap-8 animate-fade-in" style="width: 100%; max-width: 700px; margin: auto;">
-                    <div class="flex items-center gap-4">
-                        <span style="font-size: 1.5rem; font-weight: bold; color: var(--color-highlight);">${currentIndex + 1}</span>
-                        <i data-lucide="arrow-right" style="color: var(--color-highlight);"></i>
-                        <h2 style="font-size: 2rem; color: var(--color-contrast); margin: 0;">${q.title}</h2>
-                    </div>
-                    
-                    ${inputHTML}
-                    
-                    <div class="flex justify-between items-center mt-4">
-                        <button id="prevBtn" class="btn outline" ${currentIndex === 0 ? 'disabled' : ''}><i data-lucide="arrow-left"></i></button>
-                        <button id="nextBtn" class="btn primary" style="padding: 1rem 2rem; font-size: 1.1rem;">OK <i data-lucide="check"></i></button>
-                    </div>
-                </div>
-            `;
-        }
-
+    if (!form.questions || form.questions.length === 0) {
         container.innerHTML = `
-            ${form.settings.loadingBorder ? '<div id="liveLoadingBorder" class="loading-border active" style="transition: clip-path 0.5s ease; border-color: var(--color-highlight);"></div>' : ''}
-            <div class="flex flex-col h-full w-full justify-center items-center" style="padding: 2rem; background-color: var(--color-main);">
-                ${content}
+            <div style="display: flex; height: 100vh; background-color: #F0F0F2; font-family: 'Instrument Sans', sans-serif; align-items: center; justify-content: center; flex-direction: column;">
+                <h2>Este formulário ainda não possui perguntas.</h2>
             </div>
         `;
-        
-        if (window.lucide) lucide.createIcons();
-        updateLoadingBorder();
+        return;
+    }
 
-        // Bind events
-        const validateVague = (text) => {
-            if (!form.settings.vagueDetector) return true;
-            // Vaga: menos que 3 letras, ou apenas números/símbolos repetitivos
-            if (text.length < 3) return false;
-            if (/^[^a-zA-Z]+$/.test(text)) return false; // Sem letras
-            return true;
-        };
+    let currentStep = 0;
+    const totalSteps = form.questions.length;
+    let answers = {};
 
-        const handleNext = () => {
-            if (currentIndex >= 0 && currentIndex < totalQuestions) {
-                const q = form.questions[currentIndex];
-                const input = document.getElementById('qInput');
-                if (input) {
-                    const val = input.value;
-                    if (q.required && !val.trim()) {
-                        alert('Resposta obrigatória.');
-                        return;
-                    }
-                    if (val.trim() && !validateVague(val)) {
-                        alert('Por favor, forneça uma resposta mais detalhada e válida.');
-                        return;
-                    }
-                    responses[q.id] = val;
-                }
-            }
-
-            currentIndex++;
-            
-            // Se chegou no fim
-            if (currentIndex === totalQuestions) {
-                // Salvar resposta no store local
-                store.saveResponse(form.id, responses);
+    const renderLayout = () => {
+        container.innerHTML = `
+            <div class="live-form-wrapper" style="position: relative; display: flex; flex-direction: column; height: 100vh; background-color: #F0F0F2; font-family: 'Instrument Sans', sans-serif; overflow: hidden; align-items: center;">
                 
-                // Mocks de e-mail (alertas para visualização do fluxo)
-                if (form.settings.emailClient) {
-                    console.log(`E-mail CLIENTE enviado: ${form.settings.emailClientText}`);
-                }
-                if (form.settings.emailStudio) {
-                    console.log(`Alerta STUDIO enviado: Novo preenchimento!`);
-                }
-            }
+                <!-- LOADING BORDER EFFECT -->
+                <div class="border-top" style="position: absolute; top: 0; left: 0; height: 3px; background-color: #7F00E1; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 50;"></div>
+                <div class="border-right" style="position: absolute; top: 0; right: 0; width: 3px; background-color: #7F00E1; transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 50;"></div>
+                <div class="border-bottom" style="position: absolute; bottom: 0; right: 0; height: 3px; background-color: #7F00E1; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 50;"></div>
+                <div class="border-left" style="position: absolute; bottom: 0; left: 0; width: 3px; background-color: #7F00E1; transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 50;"></div>
+
+                <!-- FLOATING HEADER -->
+                <div style="position: absolute; top: 16px; left: 50%; transform: translateX(-50%); background-color: #DFDFE3; border-radius: 100px; border: 1px solid rgba(1,1,1,0.08); padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; gap: 32px; z-index: 40; min-width: 320px; max-width: 90vw;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#010101" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                    </div>
+                    <div style="font-size: 13px; font-weight: 500; color: #010101; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px;">
+                        ${form.title}
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span id="header-progress-text" style="font-size: 12px; color: rgba(1,1,1,0.45); font-weight: 500;">1 / ${totalSteps}</span>
+                        <div style="width: 120px; height: 3px; background-color: rgba(1,1,1,0.05); border-radius: 100px; position: relative; overflow: hidden;">
+                            <div id="header-progress-bar" style="position: absolute; top: 0; left: 0; height: 100%; background-color: #7F00E1; transition: width 0.3s ease;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- QUESTION AREA -->
+                <div id="question-container" style="flex: 1; width: 100%; max-width: 640px; display: flex; flex-direction: column; justify-content: center; padding: 0 24px; opacity: 0; transform: translateY(10px); transition: opacity 0.4s ease, transform 0.4s ease;">
+                    <!-- Rendered per step -->
+                </div>
+
+                <!-- FLOATING BOTTOM NAV -->
+                <div style="position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%); background-color: #DFDFE3; border-radius: 100px; border: 1px solid rgba(1,1,1,0.08); padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; gap: 32px; z-index: 40; min-width: 320px;">
+                    <button id="nav-prev" style="background: none; border: none; color: rgba(1,1,1,0.5); font-size: 12px; font-weight: 600; cursor: pointer; padding: 8px; transition: color 0.2s;">
+                        ← Anterior
+                    </button>
+                    
+                    <div id="step-dots" style="display: flex; gap: 8px;">
+                        <!-- Rendered by JS -->
+                    </div>
+
+                    <button id="nav-next" style="background-color: #010101; color: #F0F0F2; border: none; border-radius: 100px; font-size: 13px; font-weight: 600; cursor: pointer; padding: 0 20px; height: 32px; transition: opacity 0.2s;">
+                        Próxima →
+                    </button>
+                </div>
+
+            </div>
             
-            renderQuestion();
+            <style>
+                .live-form-wrapper * { box-sizing: border-box; }
+                
+                /* Animations */
+                .fade-in-up { opacity: 1 !important; transform: translateY(0) !important; }
+                
+                /* Text Input */
+                .live-input-text { width: 100%; font-size: 24px; font-family: 'Instrument Sans'; color: #010101; background: transparent; border: none; border-bottom: 1px solid rgba(1,1,1,0.1); padding: 8px 0; outline: none; transition: border-color 0.2s; }
+                .live-input-text:focus { border-color: #010101; }
+                .live-input-text::placeholder { color: rgba(1,1,1,0.3); font-style: italic; }
+
+                /* Multiple Choice Cards */
+                .mc-card { background-color: #DFDFE3; border: 1px solid rgba(1,1,1,0.08); border-radius: 12px; height: 56px; padding: 0 16px; display: flex; align-items: center; gap: 16px; cursor: pointer; transition: all 0.2s; }
+                .mc-card:hover { border-color: #010101; }
+                .mc-card.selected { background-color: #010101; color: #F0F0F2; }
+                
+                .key-badge { width: 20px; height: 20px; background-color: #F0F0F2; border: 1px solid rgba(1,1,1,0.08); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: #010101; transition: all 0.2s; }
+                .mc-card.selected .key-badge { background-color: transparent; border-color: rgba(240,240,242,0.3); color: #F0F0F2; }
+
+                /* Rating Squares */
+                .rating-sq { width: 48px; height: 48px; background-color: #DFDFE3; border: 1px solid rgba(1,1,1,0.08); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; color: #010101; cursor: pointer; transition: all 0.2s; }
+                .rating-sq:hover { border-color: #7F00E1; }
+                .rating-sq.selected { background-color: #010101; color: #F0F0F2; border-color: #010101; }
+
+                /* Yes/No Cards */
+                .yn-card { flex: 1; height: 72px; background-color: #DFDFE3; border: 1px solid rgba(1,1,1,0.08); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 600; color: #010101; cursor: pointer; transition: all 0.2s; }
+                .yn-card:hover { border-color: #010101; }
+                .yn-card.selected { background-color: #010101; color: #F0F0F2; }
+
+                /* CTA */
+                .live-cta-btn { background-color: #010101; color: #F0F0F2; border: none; border-radius: 100px; height: 48px; padding: 0 32px; font-size: 15px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; font-family: 'Instrument Sans'; }
+                .live-cta-btn:hover { opacity: 0.9; }
+
+                .step-dot { width: 6px; height: 6px; border-radius: 50%; border: 1px solid rgba(1,1,1,0.1); transition: all 0.2s; }
+                .step-dot.active { background-color: #010101; border-color: #010101; }
+                .step-dot.completed { background-color: #7F00E1; border-color: #7F00E1; }
+            </style>
+        `;
+
+        if (window.lucide) lucide.createIcons();
+        attachGlobalEvents();
+        renderStep();
+    };
+
+    const updateProgressUI = () => {
+        const p = totalSteps === 0 ? 0 : (currentStep / totalSteps) * 100;
+        
+        // Internal header text & bar
+        document.getElementById('header-progress-text').textContent = `${currentStep + 1} / ${totalSteps}`;
+        document.getElementById('header-progress-bar').style.width = `${p}%`;
+
+        // Loading Border Effect (4 corners)
+        // Stubs at 0% = 16px.
+        const sizeStr = `max(16px, ${p}%)`;
+        container.querySelector('.border-top').style.width = sizeStr;
+        container.querySelector('.border-right').style.height = sizeStr;
+        container.querySelector('.border-bottom').style.width = sizeStr;
+        container.querySelector('.border-left').style.height = sizeStr;
+
+        // Bottom Nav Dots
+        const dotsContainer = document.getElementById('step-dots');
+        dotsContainer.innerHTML = Array.from({length: totalSteps}).map((_, i) => {
+            let cls = 'step-dot';
+            if (i === currentStep) cls += ' active';
+            else if (i < currentStep) cls += ' completed';
+            return `<div class="${cls}"></div>`;
+        }).join('');
+
+        // Nav Buttons
+        document.getElementById('nav-prev').style.opacity = currentStep === 0 ? '0.3' : '1';
+        document.getElementById('nav-prev').style.pointerEvents = currentStep === 0 ? 'none' : 'auto';
+
+        const nextBtn = document.getElementById('nav-next');
+        if (currentStep === totalSteps - 1) {
+            nextBtn.textContent = 'Enviar Formulário';
+            nextBtn.style.backgroundColor = '#7F00E1';
+        } else {
+            nextBtn.textContent = 'Próxima →';
+            nextBtn.style.backgroundColor = '#010101';
+        }
+    };
+
+    const renderStep = () => {
+        const q = form.questions[currentStep];
+        const qContainer = document.getElementById('question-container');
+        
+        // Reset animation
+        qContainer.classList.remove('fade-in-up');
+        
+        setTimeout(() => {
+            // Render Input HTML based on type
+            let inputHtml = '';
+            
+            if (['short_text', 'long_text', 'email', 'number', 'phone', 'website'].includes(q.type)) {
+                inputHtml = `
+                    <input type="text" class="live-input-text" id="ans-input" placeholder="${q.placeholder || 'Digite sua resposta aqui...'}" autocomplete="off">
+                `;
+            } 
+            else if (['multiple_choice', 'dropdown', 'checkbox'].includes(q.type)) {
+                // Fake options for demo since data model doesn't store options yet
+                const options = ['Opção A', 'Opção B', 'Opção C'];
+                const letters = ['A', 'B', 'C', 'D', 'E'];
+                inputHtml = `
+                    <div style="display: flex; flex-direction: column; gap: 8px; width: 100%;">
+                        ${options.map((opt, i) => `
+                            <div class="mc-card" data-val="${opt}">
+                                <div class="key-badge">${letters[i]}</div>
+                                <span style="font-size: 15px;">${opt}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+            else if (q.type === 'rating') {
+                inputHtml = `
+                    <div style="display: flex; flex-direction: column; gap: 12px; width: 100%;">
+                        <div style="display: flex; gap: 8px;">
+                            ${[1,2,3,4,5].map(n => `
+                                <div class="rating-sq" data-val="${n}">${n}</div>
+                            `).join('')}
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 0 4px;">
+                            <span style="font-size: 12px; color: rgba(1,1,1,0.4); font-weight: 500;">Discordo totalmente</span>
+                            <span style="font-size: 12px; color: rgba(1,1,1,0.4); font-weight: 500;">Concordo totalmente</span>
+                        </div>
+                    </div>
+                `;
+            }
+            else if (q.type === 'yes_no') {
+                inputHtml = `
+                    <div style="display: flex; gap: 16px; width: 100%;">
+                        <div class="yn-card" data-val="Sim">Sim</div>
+                        <div class="yn-card" data-val="Não">Não</div>
+                    </div>
+                `;
+            }
+            else {
+                // Fallback
+                inputHtml = `<input type="text" class="live-input-text" id="ans-input" placeholder="Digite sua resposta..." autocomplete="off">`;
+            }
+
+            qContainer.innerHTML = `
+                <div style="display: flex; flex-direction: column; align-items: flex-start; max-width: 100%;">
+                    
+                    <div style="font-size: 13px; font-weight: 700; color: #7F00E1; margin-bottom: 8px;">
+                        ${String(currentStep + 1).padStart(2, '0')} →
+                    </div>
+                    
+                    <h2 style="font-size: 32px; font-weight: 600; color: #010101; line-height: 1.3; margin: 0 0 8px 0; max-height: calc(32px * 1.3 * 2); overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">
+                        ${q.title}
+                        ${q.required ? '<span style="color: #7F00E1;">*</span>' : ''}
+                    </h2>
+                    
+                    ${q.description ? `<p style="font-size: 14px; color: rgba(1,1,1,0.5); line-height: 1.6; margin: 0 0 32px 0;">${q.description}</p>` : '<div style="height: 32px;"></div>'}
+
+                    <!-- INPUT AREA -->
+                    <div style="width: 100%; margin-bottom: 32px;">
+                        ${inputHtml}
+                    </div>
+
+                    <!-- CTA ROW -->
+                    <div style="display: flex; align-items: center; gap: 24px;">
+                        <button id="live-confirm-btn" class="live-cta-btn">Confirmar</button>
+                        <span style="font-size: 12px; color: rgba(1,1,1,0.35); font-weight: 500;">ou pressione Enter ↵</span>
+                    </div>
+
+                </div>
+            `;
+            
+            // Animate In
+            qContainer.classList.add('fade-in-up');
+            
+            // Attach Input Events
+            attachInputEvents();
+            
+            // Focus input if text
+            const textInput = document.getElementById('ans-input');
+            if (textInput) {
+                // Restore answer if exists
+                if (answers[q.id]) textInput.value = answers[q.id];
+                setTimeout(() => textInput.focus(), 100);
+            }
+
+            updateProgressUI();
+
+        }, 100); // Small delay for out-animation
+    };
+
+    const attachInputEvents = () => {
+        const q = form.questions[currentStep];
+
+        // Selection logics for cards
+        const handleSelection = (cardsSelector) => {
+            const cards = document.querySelectorAll(cardsSelector);
+            cards.forEach(card => {
+                // Pre-select
+                if (answers[q.id] === card.getAttribute('data-val')) {
+                    card.classList.add('selected');
+                }
+                
+                card.addEventListener('click', () => {
+                    cards.forEach(c => c.classList.remove('selected'));
+                    card.classList.add('selected');
+                    answers[q.id] = card.getAttribute('data-val');
+                    
+                    // Auto-advance on selection for quick inputs
+                    setTimeout(goNext, 300);
+                });
+            });
         };
 
-        const nextBtn = document.getElementById('nextBtn');
-        if (nextBtn) nextBtn.addEventListener('click', handleNext);
+        handleSelection('.mc-card');
+        handleSelection('.rating-sq');
+        handleSelection('.yn-card');
 
-        const prevBtn = document.getElementById('prevBtn');
-        if (prevBtn) prevBtn.addEventListener('click', () => {
-            currentIndex--;
-            renderQuestion();
-        });
-
-        // Yes/No Quick Select
-        document.querySelectorAll('.opt-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const q = form.questions[currentIndex];
-                responses[q.id] = e.target.getAttribute('data-val');
-                handleNext();
-            });
+        // Confirm btn
+        document.getElementById('live-confirm-btn').addEventListener('click', () => {
+            saveTextAnswer();
+            goNext();
         });
     };
 
-    renderQuestion();
+    const saveTextAnswer = () => {
+        const textInput = document.getElementById('ans-input');
+        if (textInput) {
+            answers[form.questions[currentStep].id] = textInput.value;
+        }
+    };
+
+    const attachGlobalEvents = () => {
+        // Enter key to advance
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault(); // prevent form submit or default actions
+                
+                // If it's a card-based question, only advance if something is selected
+                const q = form.questions[currentStep];
+                const isCard = ['multiple_choice', 'dropdown', 'checkbox', 'rating', 'yes_no'].includes(q.type);
+                
+                if (isCard && !answers[q.id]) {
+                    // Optional: shake effect if required
+                    return; 
+                }
+
+                saveTextAnswer();
+                goNext();
+            }
+        });
+
+        document.getElementById('nav-prev').addEventListener('click', () => {
+            if (currentStep > 0) {
+                saveTextAnswer();
+                currentStep--;
+                renderStep();
+            }
+        });
+
+        document.getElementById('nav-next').addEventListener('click', () => {
+            saveTextAnswer();
+            goNext();
+        });
+    };
+
+    const goNext = () => {
+        if (currentStep < totalSteps - 1) {
+            currentStep++;
+            renderStep();
+        } else {
+            // Final Submit
+            finishForm();
+        }
+    };
+
+    const finishForm = () => {
+        const qContainer = document.getElementById('question-container');
+        qContainer.classList.remove('fade-in-up');
+        
+        // Fake saving
+        setTimeout(() => {
+            qContainer.innerHTML = `
+                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; max-width: 100%;">
+                    <div style="width: 64px; height: 64px; border-radius: 50%; background-color: #7F00E1; display: flex; align-items: center; justify-content: center; margin-bottom: 24px;">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#F0F0F2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+                    <h2 style="font-size: 32px; font-weight: 600; color: #010101; line-height: 1.3; margin: 0 0 16px 0;">
+                        Tudo Certo!
+                    </h2>
+                    <p style="font-size: 15px; color: rgba(1,1,1,0.5); line-height: 1.6; margin: 0 0 32px 0;">Suas respostas foram salvas com sucesso. Obrigado pela participação.</p>
+                    
+                    <a href="#/forms" style="height: 48px; padding: 0 32px; border-radius: 100px; background-color: #010101; color: #F0F0F2; font-size: 15px; font-weight: 600; text-decoration: none; display: flex; align-items: center; justify-content: center;">
+                        Voltar ao Studio
+                    </a>
+                </div>
+            `;
+            qContainer.classList.add('fade-in-up');
+            
+            // Force border to 100% and hide nav
+            const sizeStr = '100%';
+            container.querySelector('.border-top').style.width = sizeStr;
+            container.querySelector('.border-right').style.height = sizeStr;
+            container.querySelector('.border-bottom').style.width = sizeStr;
+            container.querySelector('.border-left').style.height = sizeStr;
+
+            document.getElementById('step-dots').parentElement.style.display = 'none';
+        }, 300);
+    };
+
+    renderLayout();
 };
