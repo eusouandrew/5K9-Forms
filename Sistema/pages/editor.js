@@ -1,4 +1,5 @@
 import { store } from '../store.js';
+import { renderSidebar } from '../components/sidebar.js';
 
 export const renderEditor = (container, formId) => {
     let form = formId === 'new' ? {
@@ -43,7 +44,11 @@ export const renderEditor = (container, formId) => {
     // ───────────────────────── LAYOUT ─────────────────────────
     const renderLayout = () => {
         container.innerHTML = `
-            <div style="display: flex; flex-direction: column; height: 100vh; background-color: #F0F0F2; font-family: 'Instrument Sans', sans-serif; overflow: hidden; padding: 16px; gap: 16px;">
+            <div style="display: flex; flex: 1; width: 100%; height: 100vh; background-color: #F0F0F2; font-family: 'Instrument Sans', sans-serif; overflow: hidden;">
+
+            <div id="sidebar-container"></div>
+
+            <div style="display: flex; flex-direction: column; flex: 1; min-width: 0; height: 100vh; overflow: hidden; padding: 16px; padding-left: 100px; gap: 16px;">
 
                 <!-- TOP BAR -->
                 <div style="background-color: #DFDFE3; border-radius: 16px; border: 1px solid rgba(1,1,1,0.08); height: 56px; display: flex; justify-content: space-between; align-items: center; padding: 0 16px; flex-shrink: 0;">
@@ -108,6 +113,7 @@ export const renderEditor = (container, formId) => {
 
                 </div>
             </div>
+            </div>
 
             <style>
                 .palette-item { transition: border-color 0.18s, transform 0.18s; }
@@ -139,6 +145,8 @@ export const renderEditor = (container, formId) => {
 
         if (window.lucide) lucide.createIcons();
         dropZoneBound = false; // o dropZone foi recriado; religa os listeners
+        const sbContainer = document.getElementById('sidebar-container');
+        if (sbContainer) renderSidebar(sbContainer, '/forms');
         renderSource('campos');
         renderCanvas();
         renderProperties();
