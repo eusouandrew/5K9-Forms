@@ -169,13 +169,24 @@ function injectStyles() {
         #sidebar-wrapper.is-collapsed .sb-item__tag,
         #sidebar-wrapper.is-collapsed .sb-section-label,
         #sidebar-wrapper.is-collapsed .sb-profile__info {
-            opacity: 0; width: 0; pointer-events: none; position: absolute;
+            display: none;
         }
-        #sidebar-wrapper.is-collapsed .sb-item,
-        #sidebar-wrapper.is-collapsed .sb-logo,
-        #sidebar-wrapper.is-collapsed .sb-profile { justify-content: center; padding: 0; height: 42px; }
-        #sidebar-wrapper.is-collapsed .sb-logo__mark { width: 100%; }
-        #sidebar-wrapper.is-collapsed .sb-section-label { height: 0; padding: 0; }
+        #sidebar-wrapper.is-collapsed .sb-nav,
+        #sidebar-wrapper.is-collapsed .sb-footer { align-items: center; }
+        #sidebar-wrapper.is-collapsed .sb-item {
+            width: 44px; height: 44px; padding: 0;
+            justify-content: center; gap: 0;
+        }
+        #sidebar-wrapper.is-collapsed .sb-logo {
+            width: 44px; height: 44px; padding: 0;
+            justify-content: center;
+        }
+        #sidebar-wrapper.is-collapsed .sb-profile {
+            width: 44px; height: 44px; padding: 0;
+            justify-content: center;
+        }
+        #sidebar-wrapper.is-collapsed .sb-section-label { display: none; }
+        #sidebar-wrapper.is-collapsed .sb-divider { width: 24px; align-self: center; }
 
         /* Tooltip flutuante (fixed → escapa do sidebar) */
         .sb-tooltip {
