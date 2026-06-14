@@ -38,7 +38,16 @@ export const theme = {
 
 const THEME_CSS = `
 /* ====== DARK MODE OVERLAY ====== */
-html[data-theme="dark"] body { background-color: #121214; color: #F0F0F2; }
+html[data-theme="dark"] body { background-color: #121214; color: #E8E8EC; }
+
+/* Catch-all: por padrão, todo texto no dark é claro. Regras específicas
+   abaixo re-escurecem o que estiver sobre fundos claros (botões etc). */
+html[data-theme="dark"] #app,
+html[data-theme="dark"] #app * {
+    color: #E8E8EC;
+}
+/* Placeholders e textos auxiliares um tom abaixo */
+html[data-theme="dark"] #app *::placeholder { color: rgba(232,232,236,0.4) !important; }
 
 /* Backgrounds principais (#F0F0F2) */
 html[data-theme="dark"] [style*="background-color: #F0F0F2"],
@@ -51,6 +60,17 @@ html[data-theme="dark"] [style*="background: #F0F0F2"] {
 html[data-theme="dark"] [style*="background-color: #DFDFE3"],
 html[data-theme="dark"] [style*="background-color:#DFDFE3"],
 html[data-theme="dark"] [style*="background: #DFDFE3"] {
+    background-color: #2A2A30 !important;
+}
+
+/* Fundos brancos puros (#fff / #ffffff / white) -> superfície escura,
+   com texto escuro forçado a claro */
+html[data-theme="dark"] [style*="background-color: #fff"],
+html[data-theme="dark"] [style*="background-color:#fff"],
+html[data-theme="dark"] [style*="background-color: #FFFFFF"],
+html[data-theme="dark"] [style*="background-color: white"],
+html[data-theme="dark"] [style*="background: #fff"],
+html[data-theme="dark"] [style*="background: white"] {
     background-color: #2A2A30 !important;
 }
 

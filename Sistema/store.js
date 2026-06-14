@@ -60,5 +60,48 @@ export const store = {
     deleteResponse: (formId, responseId) => {
         const r = store.getResponses(formId).filter(x => x.id !== responseId);
         localStorage.setItem(`5k9_responses_${formId}`, JSON.stringify(r));
+    },
+
+    // ─────────────────────────────────────────────────────────────────
+    // PRESENÇA / USUÁRIOS ONLINE
+    // PLACEHOLDER: hoje funciona localmente. Para presença real entre
+    // máquinas, troque getOnlineUsers() por uma chamada ao backend
+    // (WebSocket/Firebase/Supabase presence). O resto da UI já consome
+    // este formato: [{ name, email, initials, color, online }].
+    // ─────────────────────────────────────────────────────────────────
+    getTeam: () => JSON.parse(localStorage.getItem('5k9_team')) || [
+        { name: 'Ana Klein',      email: 'ana@5k9.studio',     color: '#e1bee7' },
+        { name: 'João Dias',      email: 'joao@5k9.studio',    color: '#c5cae9' },
+        { name: 'Marina Bastos',  email: 'marina@5k9.studio',  color: '#ffcc80' },
+        { name: 'Rafael Costa',   email: 'rafael@5k9.studio',  color: '#a5d6a7' },
+        { name: 'Beatriz Lima',   email: 'bia@5k9.studio',     color: '#ef9a9a' },
+    ],
+    setTeam: (team) => localStorage.setItem('5k9_team', JSON.stringify(team)),
+
+    // Marca o usuário atual como "visto agora"
+    heartbeat: () => {
+        const u = store.getUser();
+        if (!u) return;
+        const seen = JSON.parse(localStorage.getItem('5k9_presence')) || {};
+        seen[u.email] = Date.now();
+        localStorage.setItem('5k9_presence', JSON.stringify(seen));
+    },
+
+    // Retorna o time com flag online. PLACEHOLDER: considera "online"
+    // quem teve heartbeat nos últimos 5 min (no localStorage local).
+    // Substitua por presença real do backend quando disponível.
+    getOnlineUsers: () => {
+        const team = store.getTeam();
+        const seen = JSON.parse(localStorage.getItem('5k9_presence')) || {};
+        const current = store.getUser();
+        const FIVE_MIN = 5 * 60 * 1000;
+        const now = Date.now();
+        return team.map(member => {
+            const initials = member.name.split(' ').map(s => s.charAt(0)).slice(0,2).join('').toUpperCase();
+            const isCurrent = current && current.email === member.email;
+            const lastSeen = seen[member.email];
+            const online = isCurrent || (lastSeen && (now - lastSeen) < FIVE_MIN);
+            return { ...member, initials, online, isCurrent };
+        });
     }
 };
