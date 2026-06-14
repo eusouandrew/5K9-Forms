@@ -118,12 +118,13 @@ export const renderHome = (container) => {
                 background-color: #010101 !important;
                 border-color: #010101 !important;
             }
-            .act-btn--edit:hover i, .act-btn--live:hover i { color: #F0F0F2 !important; }
+            .act-btn--edit:hover i, .act-btn--live:hover i,
+            .act-btn--edit:hover svg, .act-btn--live:hover svg { color: #F0F0F2 !important; stroke: #F0F0F2 !important; }
             .act-btn--ai:hover {
                 background-color: #7F00E1 !important;
                 border-color: #7F00E1 !important;
             }
-            .act-btn--ai:hover i { color: #F0F0F2 !important; }
+            .act-btn--ai:hover i, .act-btn--ai:hover svg { color: #F0F0F2 !important; stroke: #F0F0F2 !important; }
         </style>
     `;
 

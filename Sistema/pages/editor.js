@@ -16,6 +16,11 @@ export const renderEditor = (container, formId) => {
     let activeFieldId = null;
     let previewOpen = false;
 
+    // Estado de drag (escopo do editor — não recriado a cada render)
+    let dragState = { type: null, bankId: null, index: null };
+    let dropPlaceholder = null;
+    let dropZoneBound = false;
+
     // Campos padrão (paleta) — sempre disponíveis
     const fieldTypes = [
         { type: 'short_text',      icon: 'align-left',    label: 'Texto curto' },
@@ -78,7 +83,7 @@ export const renderEditor = (container, formId) => {
 
                     <!-- CENTER CANVAS -->
                     <div style="flex: 1; min-width: 0; background-color: #F0F0F2; border-radius: 16px; border: 1px solid #DFDFE3; position: relative; display: flex; flex-direction: column; overflow: hidden;">
-                        <div id="drop-zone" style="flex: 1; padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; padding-bottom: 60px; max-width: 820px; width: 100%; margin: 0 auto;"></div>
+                        <div id="drop-zone" style="flex: 1; padding: 32px 40px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; padding-bottom: 60px; max-width: 920px; width: 100%; margin: 0 auto;"></div>
                         <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background-color: #DFDFE3;">
                             <div id="progress-fill" style="height: 100%; width: 0%; background-color: #7F00E1; transition: width 0.3s ease;"></div>
                         </div>
@@ -133,6 +138,7 @@ export const renderEditor = (container, formId) => {
         `;
 
         if (window.lucide) lucide.createIcons();
+        dropZoneBound = false; // o dropZone foi recriado; religa os listeners
         renderSource('campos');
         renderCanvas();
         renderProperties();
@@ -426,50 +432,56 @@ export const renderEditor = (container, formId) => {
     };
 
     // ───────────────────────── DRAG & DROP ─────────────────────────
+    // Estado de drag compartilhado (no escopo do editor, não recriado a cada render)
+    // Anexa listeners aos itens arrastáveis (roda a cada render da fonte/canvas)
     const attachDragAndDrop = () => {
-        const dropZone = document.getElementById('drop-zone');
-        if (!dropZone) return;
-
-        let draggedType = null;
-        let draggedBankId = null;
-        let draggedIndex = null;
-        let placeholder = document.createElement('div');
-        placeholder.className = 'drop-placeholder';
+        if (!dropPlaceholder) {
+            dropPlaceholder = document.createElement('div');
+            dropPlaceholder.className = 'drop-placeholder';
+        }
 
         // Paleta de campos
         document.querySelectorAll('.palette-item').forEach(item => {
+            if (item.dataset.dragBound) return;
+            item.dataset.dragBound = '1';
             item.addEventListener('dragstart', (e) => {
-                draggedType = item.getAttribute('data-type');
-                draggedBankId = null; draggedIndex = null;
+                dragState = { type: item.getAttribute('data-type'), bankId: null, index: null };
                 e.dataTransfer.effectAllowed = 'copy';
-                e.dataTransfer.setData('text/plain', draggedType);
+                e.dataTransfer.setData('text/plain', dragState.type);
             });
             item.addEventListener('dragend', () => {
-                if (placeholder.parentNode) placeholder.parentNode.removeChild(placeholder);
-                draggedType = null;
+                if (dropPlaceholder.parentNode) dropPlaceholder.parentNode.removeChild(dropPlaceholder);
             });
         });
 
         // Itens do banco
         document.querySelectorAll('.bank-item').forEach(item => {
+            if (item.dataset.dragBound) return;
+            item.dataset.dragBound = '1';
             item.addEventListener('dragstart', (e) => {
-                draggedBankId = item.getAttribute('data-bank-id');
-                draggedType = null; draggedIndex = null;
+                dragState = { type: null, bankId: item.getAttribute('data-bank-id'), index: null };
                 e.dataTransfer.effectAllowed = 'copy';
-                e.dataTransfer.setData('text/plain', draggedBankId);
+                e.dataTransfer.setData('text/plain', dragState.bankId);
             });
             item.addEventListener('dragend', () => {
-                if (placeholder.parentNode) placeholder.parentNode.removeChild(placeholder);
-                draggedBankId = null;
+                if (dropPlaceholder.parentNode) dropPlaceholder.parentNode.removeChild(dropPlaceholder);
             });
         });
+
+        bindDropZoneOnce();
+    };
+
+    // Listeners do dropZone — anexados UMA única vez
+    const bindDropZoneOnce = () => {
+        const dropZone = document.getElementById('drop-zone');
+        if (!dropZone || dropZoneBound) return;
+        dropZoneBound = true;
 
         // Reordenar itens existentes
         dropZone.addEventListener('dragstart', (e) => {
             const item = e.target.closest('.canvas-item');
             if (item) {
-                draggedIndex = form.questions.findIndex(q => q.id === item.getAttribute('data-id'));
-                draggedType = null; draggedBankId = null;
+                dragState = { type: null, bankId: null, index: form.questions.findIndex(q => q.id === item.getAttribute('data-id')) };
                 e.dataTransfer.effectAllowed = 'move';
                 setTimeout(() => item.style.display = 'none', 0);
             }
@@ -478,38 +490,49 @@ export const renderEditor = (container, formId) => {
             const item = e.target.closest('.canvas-item');
             if (item) {
                 item.style.display = 'flex';
-                if (placeholder.parentNode) placeholder.parentNode.removeChild(placeholder);
-                draggedIndex = null;
+                if (dropPlaceholder.parentNode) dropPlaceholder.parentNode.removeChild(dropPlaceholder);
+                dragState.index = null;
                 renderCanvas();
             }
         });
 
         dropZone.addEventListener('dragover', (e) => {
             e.preventDefault();
-            e.dataTransfer.dropEffect = (draggedType || draggedBankId) ? 'copy' : 'move';
+            e.dataTransfer.dropEffect = (dragState.type || dragState.bankId) ? 'copy' : 'move';
             const targetItem = e.target.closest('.canvas-item');
             if (targetItem) {
                 const b = targetItem.getBoundingClientRect();
                 const offset = b.y + (b.height / 2);
-                if (e.clientY - offset > 0) targetItem.after(placeholder);
-                else targetItem.before(placeholder);
-            } else if (form.questions.length === 0 || e.target === dropZone) {
-                dropZone.appendChild(placeholder);
+                if (e.clientY - offset > 0) targetItem.after(dropPlaceholder);
+                else targetItem.before(dropPlaceholder);
+            } else {
+                dropZone.appendChild(dropPlaceholder);
+            }
+        });
+
+        dropZone.addEventListener('dragleave', (e) => {
+            // Remove o placeholder se o cursor sair completamente da zona
+            if (!dropZone.contains(e.relatedTarget) && dropPlaceholder.parentNode) {
+                dropPlaceholder.parentNode.removeChild(dropPlaceholder);
             }
         });
 
         dropZone.addEventListener('drop', (e) => {
             e.preventDefault();
-            if (!placeholder.parentNode) return;
-            const items = Array.from(dropZone.children);
-            const dropIndex = items.indexOf(placeholder);
+            // Calcula índice de inserção pela posição do placeholder
+            let dropIndex = form.questions.length;
+            if (dropPlaceholder.parentNode === dropZone) {
+                const items = Array.from(dropZone.children).filter(c => c.classList.contains('canvas-item') || c === dropPlaceholder);
+                dropIndex = items.indexOf(dropPlaceholder);
+                if (dropIndex < 0) dropIndex = form.questions.length;
+            }
 
-            if (draggedType) {
-                const newField = { id: crypto.randomUUID(), type: draggedType, title: '', placeholder: '', required: false };
+            if (dragState.type) {
+                const newField = { id: crypto.randomUUID(), type: dragState.type, title: '', placeholder: '', required: false };
                 form.questions.splice(dropIndex, 0, newField);
                 activeFieldId = newField.id;
-            } else if (draggedBankId) {
-                const bankQ = (store.getQuestions ? store.getQuestions() : []).find(x => x.id === draggedBankId);
+            } else if (dragState.bankId) {
+                const bankQ = (store.getQuestions ? store.getQuestions() : []).find(x => x.id === dragState.bankId);
                 if (bankQ) {
                     const newField = {
                         id: crypto.randomUUID(),
@@ -522,13 +545,14 @@ export const renderEditor = (container, formId) => {
                     form.questions.splice(dropIndex, 0, newField);
                     activeFieldId = newField.id;
                 }
-            } else if (draggedIndex !== null) {
-                const moved = form.questions.splice(draggedIndex, 1)[0];
-                const finalIndex = draggedIndex < dropIndex ? dropIndex - 1 : dropIndex;
+            } else if (dragState.index !== null) {
+                const moved = form.questions.splice(dragState.index, 1)[0];
+                const finalIndex = dragState.index < dropIndex ? dropIndex - 1 : dropIndex;
                 form.questions.splice(finalIndex, 0, moved);
             }
 
-            if (placeholder.parentNode) placeholder.parentNode.removeChild(placeholder);
+            if (dropPlaceholder.parentNode) dropPlaceholder.parentNode.removeChild(dropPlaceholder);
+            dragState = { type: null, bankId: null, index: null };
             renderCanvas();
             renderProperties();
         });

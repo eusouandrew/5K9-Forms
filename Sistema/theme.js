@@ -91,7 +91,12 @@ html[data-theme="dark"] [style*="background: #010101"] {
     background-color: #F0F0F2 !important;
 }
 /* Conteúdo DENTRO de fundos pretos (que era claro) volta a ser escuro,
-   incluindo ícones — o quadrado de seleção é branco, então ícone preto. */
+   incluindo ícones — o quadrado de seleção é branco, então ícone preto.
+   IMPORTANTE: incluímos o PRÓPRIO elemento (não só os filhos), pois o
+   texto pode estar diretamente nele (ex: botão "Novo Formulário"). */
+html[data-theme="dark"] [style*="background-color: #010101"],
+html[data-theme="dark"] [style*="background-color:#010101"],
+html[data-theme="dark"] [style*="background: #010101"],
 html[data-theme="dark"] [style*="background-color: #010101"] *,
 html[data-theme="dark"] [style*="background-color:#010101"] * {
     color: #121214 !important;
