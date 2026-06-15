@@ -103,15 +103,15 @@ function injectStyles() {
         #sidebar-wrapper.is-collapsed { width: 68px; }
         #sidebar-wrapper.is-expanded  { width: 248px; }
 
-        .sb-header { padding: 4px 4px 12px; }
+        .sb-header { padding: 0 0 12px; }
         .sb-logo {
-            display: flex; align-items: center; gap: 10px;
+            display: flex; align-items: center; gap: 12px;
             background: none; border: none; cursor: pointer;
-            width: 100%; padding: 6px; border-radius: 10px;
+            width: 100%; height: 44px; padding: 0 10px; border-radius: 11px;
             transition: background 0.15s;
         }
         .sb-logo:hover { background: var(--sb-hover, rgba(1,1,1,0.05)); }
-        .sb-logo__mark { font-size: 22px; color: var(--sb-fg, #010101); line-height: 1; flex-shrink: 0; width: 28px; text-align: center; }
+        .sb-logo__mark { font-size: 20px; color: var(--sb-fg, #010101); line-height: 1; flex-shrink: 0; width: 24px; text-align: center; display: flex; align-items: center; justify-content: center; }
         .sb-logo__text { font-size: 16px; font-weight: 700; color: var(--sb-fg, #010101); letter-spacing: -0.01em; white-space: nowrap; }
 
         .sb-nav { display: flex; flex-direction: column; gap: 4px; flex: 1; overflow-y: auto; overflow-x: hidden; }
@@ -121,11 +121,11 @@ function injectStyles() {
         }
 
         .sb-footer { display: flex; flex-direction: column; gap: 4px; padding-top: 8px; }
-        .sb-divider { height: 1px; background: var(--sb-border, rgba(1,1,1,0.10)); margin: 8px 4px; }
+        .sb-divider { height: 1px; background: var(--sb-border, rgba(1,1,1,0.10)); margin: 8px 10px; }
 
         .sb-item {
             display: flex; align-items: center; gap: 12px;
-            height: 42px; padding: 0 9px; border-radius: 11px;
+            height: 44px; padding: 0 10px; border-radius: 11px;
             text-decoration: none; color: var(--sb-fg, #010101);
             font-size: 14px; font-weight: 500;
             background: none; border: none; cursor: pointer; width: 100%;
@@ -163,7 +163,8 @@ function injectStyles() {
         .sb-profile__name { font-size: 13px; font-weight: 600; color: var(--sb-fg, #010101); }
         .sb-profile__role { font-size: 11px; color: var(--sb-muted, rgba(1,1,1,0.45)); }
 
-        /* Colapsada: esconde textos, centraliza ícones */
+        /* Colapsada: esconde textos. Os ícones mantêm o MESMO padding-left
+           do estado expandido, então não há salto de posição ao abrir/fechar. */
         #sidebar-wrapper.is-collapsed .sb-logo__text,
         #sidebar-wrapper.is-collapsed .sb-item__label,
         #sidebar-wrapper.is-collapsed .sb-item__tag,
@@ -171,22 +172,11 @@ function injectStyles() {
         #sidebar-wrapper.is-collapsed .sb-profile__info {
             display: none;
         }
-        #sidebar-wrapper.is-collapsed .sb-nav,
-        #sidebar-wrapper.is-collapsed .sb-footer { align-items: center; }
-        #sidebar-wrapper.is-collapsed .sb-item {
-            width: 44px; height: 44px; padding: 0;
-            justify-content: center; gap: 0;
-        }
-        #sidebar-wrapper.is-collapsed .sb-logo {
-            width: 44px; height: 44px; padding: 0;
-            justify-content: center;
-        }
-        #sidebar-wrapper.is-collapsed .sb-profile {
-            width: 44px; height: 44px; padding: 0;
-            justify-content: center;
-        }
         #sidebar-wrapper.is-collapsed .sb-section-label { display: none; }
-        #sidebar-wrapper.is-collapsed .sb-divider { width: 24px; align-self: center; }
+        /* item ativo colapsado: fundo quadrado de 44px, ícone alinhado igual aos demais */
+        #sidebar-wrapper.is-collapsed .sb-item--active {
+            width: 44px; padding: 0 10px;
+        }
 
         /* Tooltip flutuante (fixed → escapa do sidebar) */
         .sb-tooltip {

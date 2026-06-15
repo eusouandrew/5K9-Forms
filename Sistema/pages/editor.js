@@ -205,7 +205,7 @@ export const renderEditor = (container, formId) => {
         content.innerHTML = `
             <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px;">
                 ${CATEGORIES.map(c => `
-                    <button class="bank-filter" data-cat="${c.id}" style="font-size: 11px; padding: 4px 10px; border-radius: 100px; border: 1px solid ${bankFilter === c.id ? '#010101' : 'rgba(1,1,1,0.12)'}; background: ${bankFilter === c.id ? '#010101' : 'transparent'}; color: ${bankFilter === c.id ? '#F0F0F2' : '#010101'}; cursor: pointer; font-family: 'Instrument Sans'; font-weight: 500;">${c.label}</button>
+                    <button class="bank-filter" data-cat="${c.id}" style="flex: 1 1 auto; white-space: nowrap; font-size: 11px; padding: 5px 12px; border-radius: 8px; border: 1px solid ${bankFilter === c.id ? '#010101' : 'rgba(1,1,1,0.12)'}; background: ${bankFilter === c.id ? '#010101' : 'transparent'}; color: ${bankFilter === c.id ? '#F0F0F2' : '#010101'}; cursor: pointer; font-family: 'Instrument Sans'; font-weight: 500; text-align: center; transition: all 0.15s;">${c.label}</button>
                 `).join('')}
             </div>
             ${filtered.length === 0 ? `

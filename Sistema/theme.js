@@ -116,6 +116,22 @@ html[data-theme="dark"] .nav-item--active svg { stroke: #121214 !important; }
 /* Ícones lucide pretos genéricos -> claros (quando NÃO estão em fundo claro) */
 html[data-theme="dark"] [style*="color: #010101"] svg { color: #E8E8EC !important; stroke: #E8E8EC !important; }
 
+/* O lucide copia o style inline do <i> para o <svg>. Então svg/i com
+   color preto no PRÓPRIO elemento também precisa virar claro.
+   Exceção: dentro de um fundo que virou claro (botão preto->claro),
+   que é tratado pela regra de [background-color: #010101] svg acima. */
+html[data-theme="dark"] svg[style*="color: #010101"],
+html[data-theme="dark"] i[style*="color: #010101"],
+html[data-theme="dark"] svg[style*="color:#010101"] {
+    color: #E8E8EC !important; stroke: #E8E8EC !important;
+}
+/* Reafirma: ícones dentro de botões/superfícies CLARAS (que eram #010101)
+   permanecem escuros, sobrescrevendo a regra acima. */
+html[data-theme="dark"] [style*="background-color: #010101"] svg[style*="color: #010101"],
+html[data-theme="dark"] [style*="background-color:#010101"] svg[style*="color: #010101"] {
+    color: #121214 !important; stroke: #121214 !important;
+}
+
 /* Texto muted (rgba preto) -> cinza claro legível dentro dos cards */
 html[data-theme="dark"] [style*="rgba(1,1,1,0.6)"],
 html[data-theme="dark"] [style*="rgba(1,1,1,0.5)"],

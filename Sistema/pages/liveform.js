@@ -28,74 +28,47 @@ export const renderLiveForm = (container, formId) => {
 
     const renderLayout = () => {
         container.innerHTML = `
-            <div class="live-form-wrapper" style="position: relative; display: flex; flex-direction: column; height: 100vh; background-color: #F0F0F2; font-family: 'Instrument Sans', sans-serif; overflow: hidden; align-items: center; justify-content: center;">
+            <div class="live-form-wrapper" style="position: fixed; inset: 0; display: flex; flex-direction: column; background-color: #F0F0F2; font-family: 'Instrument Sans', sans-serif; overflow: hidden; align-items: center; justify-content: center;">
 
-                <!-- LOADING BORDER — preenche de baixo p/ cima: bottom → laterais → top -->
-                <div class="lb-bottom" style="position: absolute; bottom: 0; left: 0; width: 100%; height: 4px; background-color: #DFDFE3; z-index: 50;">
-                    <div class="lb-bottom-fill" style="position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 0%; height: 100%; background-color: #7F00E1; transition: width 0.5s cubic-bezier(0.4,0,0.2,1);"></div>
-                </div>
-                <div class="lb-left" style="position: absolute; bottom: 0; left: 0; width: 4px; height: 100%; z-index: 50; pointer-events: none;">
+                <!-- LOADING BORDER em tela cheia: barras laterais sobem e o topo fecha do centro -->
+                <div class="lb-left" style="position: fixed; bottom: 0; left: 0; width: 5px; height: 100vh; z-index: 50; pointer-events: none;">
                     <div class="lb-left-fill" style="position: absolute; bottom: 0; left: 0; width: 100%; height: 0%; background-color: #7F00E1; transition: height 0.5s cubic-bezier(0.4,0,0.2,1);"></div>
                 </div>
-                <div class="lb-right" style="position: absolute; bottom: 0; right: 0; width: 4px; height: 100%; z-index: 50; pointer-events: none;">
+                <div class="lb-right" style="position: fixed; bottom: 0; right: 0; width: 5px; height: 100vh; z-index: 50; pointer-events: none;">
                     <div class="lb-right-fill" style="position: absolute; bottom: 0; right: 0; width: 100%; height: 0%; background-color: #7F00E1; transition: height 0.5s cubic-bezier(0.4,0,0.2,1);"></div>
                 </div>
-                <div class="lb-top" style="position: absolute; top: 0; left: 0; width: 100%; height: 4px; z-index: 50; pointer-events: none;">
-                    <div class="lb-top-fill" style="position: absolute; top: 0; left: 0; width: 0%; height: 100%; background-color: #7F00E1; transition: width 0.5s cubic-bezier(0.4,0,0.2,1);"></div>
+                <!-- topo: duas metades que se encontram no centro -->
+                <div class="lb-top" style="position: fixed; top: 0; left: 0; width: 100%; height: 5px; z-index: 50; pointer-events: none; display: flex; justify-content: center;">
+                    <div class="lb-top-left" style="position: absolute; top: 0; left: 0; width: 0%; height: 100%; background-color: #7F00E1; transition: width 0.5s cubic-bezier(0.4,0,0.2,1);"></div>
+                    <div class="lb-top-right" style="position: absolute; top: 0; right: 0; width: 0%; height: 100%; background-color: #7F00E1; transition: width 0.5s cubic-bezier(0.4,0,0.2,1);"></div>
                 </div>
 
-                <!-- QUESTION AREA (centralizada vertical e horizontalmente) -->
-                <div id="question-container" style="width: 100%; max-width: 600px; display: flex; flex-direction: column; justify-content: center; padding: 0 24px; opacity: 0; transform: translateY(10px); transition: opacity 0.4s ease, transform 0.4s ease;">
+                <!-- QUESTION AREA: altura fixa, centralizada de verdade na tela -->
+                <div id="question-container" style="width: 100%; max-width: 620px; min-height: 360px; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 0 24px; margin: 0 auto; opacity: 0; transform: translateY(10px); transition: opacity 0.4s ease, transform 0.4s ease;">
                     <!-- Rendered per step -->
-                </div>
-
-                <!-- FLOATING BOTTOM NAV -->
-                <div id="bottom-nav" style="position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 12px; z-index: 40;">
-                    <button id="nav-prev" style="background-color: #DFDFE3; border: 1px solid rgba(1,1,1,0.08); color: #010101; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s;" title="Anterior">
-                        <i data-lucide="arrow-up" style="width: 18px; height: 18px;"></i>
-                    </button>
-                    <button id="nav-next" style="background-color: #010101; border: none; color: #F0F0F2; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s;" title="Próxima">
-                        <i data-lucide="arrow-down" style="width: 18px; height: 18px;"></i>
-                    </button>
                 </div>
 
             </div>
 
             <style>
                 .live-form-wrapper * { box-sizing: border-box; }
-
-                /* Animations */
                 .fade-in-up { opacity: 1 !important; transform: translateY(0) !important; }
-
-                /* Text Input */
-                .live-input-text { width: 100%; font-size: 24px; font-family: 'Instrument Sans'; color: #010101; background: transparent; border: none; border-bottom: 1px solid rgba(1,1,1,0.1); padding: 8px 0; outline: none; transition: border-color 0.2s; }
+                .live-input-text { width: 100%; font-size: 24px; font-family: 'Instrument Sans'; color: #010101; background: transparent; border: none; border-bottom: 1px solid rgba(1,1,1,0.1); padding: 8px 0; outline: none; transition: border-color 0.2s; text-align: center; }
                 .live-input-text:focus { border-color: #010101; }
                 .live-input-text::placeholder { color: rgba(1,1,1,0.3); font-style: italic; }
-
-                /* Multiple Choice Cards */
                 .mc-card { background-color: #DFDFE3; border: 1px solid rgba(1,1,1,0.08); border-radius: 12px; height: 56px; padding: 0 16px; display: flex; align-items: center; gap: 16px; cursor: pointer; transition: all 0.2s; }
                 .mc-card:hover { border-color: #010101; }
                 .mc-card.selected { background-color: #010101; color: #F0F0F2; }
-
                 .key-badge { width: 20px; height: 20px; background-color: #F0F0F2; border: 1px solid rgba(1,1,1,0.08); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: #010101; transition: all 0.2s; flex-shrink: 0; }
                 .mc-card.selected .key-badge { background-color: transparent; border-color: rgba(240,240,242,0.3); color: #F0F0F2; }
-
-                /* Rating Squares */
                 .rating-sq { width: 48px; height: 48px; background-color: #DFDFE3; border: 1px solid rgba(1,1,1,0.08); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; color: #010101; cursor: pointer; transition: all 0.2s; }
                 .rating-sq:hover { border-color: #7F00E1; }
                 .rating-sq.selected { background-color: #010101; color: #F0F0F2; border-color: #010101; }
-
-                /* Yes/No Cards */
                 .yn-card { flex: 1; height: 72px; background-color: #DFDFE3; border: 1px solid rgba(1,1,1,0.08); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 600; color: #010101; cursor: pointer; transition: all 0.2s; }
                 .yn-card:hover { border-color: #010101; }
                 .yn-card.selected { background-color: #010101; color: #F0F0F2; }
-
-                /* CTA */
                 .live-cta-btn { background-color: #010101; color: #F0F0F2; border: none; border-radius: 100px; height: 48px; padding: 0 32px; font-size: 15px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; font-family: 'Instrument Sans'; }
                 .live-cta-btn:hover { opacity: 0.9; }
-
-                #nav-prev:hover, #nav-next:hover { transform: scale(1.06); }
-                #nav-prev:disabled { opacity: 0.3; pointer-events: none; }
             </style>
         `;
 
@@ -103,7 +76,7 @@ export const renderLiveForm = (container, formId) => {
 
         // Respeita o toggle de contorno animado das configurações
         if (form.settings && form.settings.loadingBorder === false) {
-            ['.lb-bottom', '.lb-left', '.lb-right', '.lb-top'].forEach(sel => {
+            ['.lb-left', '.lb-right', '.lb-top'].forEach(sel => {
                 const el = container.querySelector(sel);
                 if (el) el.style.display = 'none';
             });
@@ -117,28 +90,22 @@ export const renderLiveForm = (container, formId) => {
         // Progresso baseado em quantas perguntas já foram respondidas
         const p = totalSteps === 0 ? 0 : (currentStep / totalSteps); // 0..1
 
-        // ── BORDA SEQUENCIAL (debaixo p/ cima) ──
-        // Fase 1 (0–25%):   linha inferior preenche do centro p/ as pontas
-        // Fase 2 (25–75%):  laterais sobem simultaneamente
-        // Fase 3 (75–100%): topo fecha do centro… na verdade das pontas p/ centro
-        const bottomFill = container.querySelector('.lb-bottom-fill');
-        const leftFill   = container.querySelector('.lb-left-fill');
-        const rightFill  = container.querySelector('.lb-right-fill');
-        const topFill    = container.querySelector('.lb-top-fill');
+        // ── BORDA EM TELA CHEIA ──
+        // Fase 1 (0–70%):   as duas laterais sobem simultaneamente
+        // Fase 2 (70–100%): o topo fecha vindo dos dois cantos para o centro
+        const leftFill  = container.querySelector('.lb-left-fill');
+        const rightFill = container.querySelector('.lb-right-fill');
+        const topLeft   = container.querySelector('.lb-top-left');
+        const topRight  = container.querySelector('.lb-top-right');
 
-        const f1 = Math.min(p / 0.25, 1);                       // 0..1 fase inferior
-        const f2 = Math.min(Math.max((p - 0.25) / 0.50, 0), 1); // 0..1 laterais
-        const f3 = Math.min(Math.max((p - 0.75) / 0.25, 0), 1); // 0..1 topo
+        const f1 = Math.min(p / 0.70, 1);                       // laterais (0..1)
+        const f2 = Math.min(Math.max((p - 0.70) / 0.30, 0), 1); // topo (0..1)
 
-        if (bottomFill) bottomFill.style.width  = `${f1 * 100}%`;
-        if (leftFill)   leftFill.style.height   = `${f2 * 100}%`;
-        if (rightFill)  rightFill.style.height  = `${f2 * 100}%`;
-        if (topFill)    topFill.style.width     = `${f3 * 100}%`;
-
-        // ── Nav buttons (setas) ──
-        const prevBtn = document.getElementById('nav-prev');
-        const nextBtn = document.getElementById('nav-next');
-        if (prevBtn) prevBtn.disabled = currentStep === 0;
+        if (leftFill)  leftFill.style.height  = `${f1 * 100}%`;
+        if (rightFill) rightFill.style.height = `${f1 * 100}%`;
+        // cada metade do topo vai até 50% (encontram-se no centro)
+        if (topLeft)   topLeft.style.width  = `${f2 * 50}%`;
+        if (topRight)  topRight.style.width = `${f2 * 50}%`;
     };
 
     const renderStep = () => {
@@ -308,19 +275,6 @@ export const renderLiveForm = (container, formId) => {
                 goNext();
             }
         });
-
-        document.getElementById('nav-prev').addEventListener('click', () => {
-            if (currentStep > 0) {
-                saveTextAnswer();
-                currentStep--;
-                renderStep();
-            }
-        });
-
-        document.getElementById('nav-next').addEventListener('click', () => {
-            saveTextAnswer();
-            goNext();
-        });
     };
 
     const goNext = () => {
@@ -348,62 +302,69 @@ export const renderLiveForm = (container, formId) => {
 
         const redirectUrl = form.settings && form.settings.redirectUrl ? form.settings.redirectUrl : null;
 
-        // 1) Completa todas as bordas (topo fecha)
-        const topFill = container.querySelector('.lb-top-fill');
-        if (topFill) topFill.style.width = '100%';
+        // 1) Completa as bordas: laterais cheias + topo fechado no centro
+        const leftFill  = container.querySelector('.lb-left-fill');
+        const rightFill = container.querySelector('.lb-right-fill');
+        const topLeft   = container.querySelector('.lb-top-left');
+        const topRight  = container.querySelector('.lb-top-right');
+        if (leftFill)  leftFill.style.height  = '100%';
+        if (rightFill) rightFill.style.height = '100%';
+        if (topLeft)   topLeft.style.width  = '50%';
+        if (topRight)  topRight.style.width = '50%';
 
-        // 2) Esconde nav e questão
-        const bottomNav = document.getElementById('bottom-nav');
-        if (bottomNav) bottomNav.style.display = 'none';
+        // 2) Some com a questão
         qContainer.style.transition = 'opacity 0.4s ease';
         qContainer.style.opacity = '0';
 
-        // 3) Após as bordas fecharem, inunda a tela de rosa
+        // 3) Inunda a tela de rosa PELAS LATERAIS (duas metades que se encontram)
         setTimeout(() => {
-            // Cria o overlay rosa que cresce de baixo p/ cima
             const flood = document.createElement('div');
             flood.id = 'completion-flood';
             flood.style.cssText = `
-                position: absolute; bottom: 0; left: 0; width: 100%; height: 0;
-                background-color: #7F00E1; z-index: 60;
+                position: fixed; inset: 0; z-index: 60;
                 display: flex; align-items: center; justify-content: center;
-                flex-direction: column; overflow: hidden;
-                transition: height 0.7s cubic-bezier(0.6, 0, 0.2, 1);
+                overflow: hidden; pointer-events: none;
             `;
             flood.innerHTML = `
-                <div style="opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease 0.4s, transform 0.5s ease 0.4s; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 24px;" id="flood-content">
+                <div class="flood-half flood-left" style="position: absolute; top: 0; left: 0; height: 100%; width: 0; background-color: #7F00E1; transition: width 0.6s cubic-bezier(0.6,0,0.2,1);"></div>
+                <div class="flood-half flood-right" style="position: absolute; top: 0; right: 0; height: 100%; width: 0; background-color: #7F00E1; transition: width 0.6s cubic-bezier(0.6,0,0.2,1);"></div>
+                <div style="position: relative; z-index: 2; opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease 0.5s, transform 0.5s ease 0.5s; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 24px; pointer-events: auto;" id="flood-content">
                     <div style="width: 72px; height: 72px; border-radius: 50%; background-color: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; margin-bottom: 24px;">
                         <i data-lucide="check" style="width: 36px; height: 36px; color: #FFFFFF;"></i>
                     </div>
                     <h1 style="font-size: 56px; font-weight: 700; color: #FFFFFF; margin: 0 0 12px 0; letter-spacing: -0.02em;">Concluído</h1>
-                    <p style="font-size: 16px; color: rgba(255,255,255,0.8); line-height: 1.6; max-width: 380px; margin: 0;">
+                    <p style="font-size: 16px; color: rgba(255,255,255,0.85); line-height: 1.6; max-width: 380px; margin: 0;">
                         Obrigado, ${respondent.name.split(' ')[0]}! Suas respostas foram registradas com sucesso.
                     </p>
                     ${redirectUrl ? `
                     <a href="${redirectUrl}" target="_blank" rel="noopener" style="margin-top: 28px; background-color: #FFFFFF; color: #7F00E1; height: 44px; padding: 0 24px; border-radius: 100px; font-size: 14px; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 8px;">
                         Continuar <i data-lucide="arrow-right" style="width: 16px; height: 16px;"></i>
                     </a>
-                    <div style="font-size: 12px; color: rgba(255,255,255,0.6); margin-top: 12px;">Redirecionando em 5s…</div>
+                    <div style="font-size: 12px; color: rgba(255,255,255,0.7); margin-top: 12px;">Redirecionando em 5s…</div>
                     ` : `
-                    <div style="font-size: 13px; color: rgba(255,255,255,0.6); margin-top: 28px;">Você já pode fechar esta janela.</div>
+                    <div style="font-size: 13px; color: rgba(255,255,255,0.7); margin-top: 28px;">Você já pode fechar esta janela.</div>
                     `}
                 </div>
             `;
             wrapper.appendChild(flood);
 
             requestAnimationFrame(() => {
-                flood.style.height = '100%';
+                // cada metade cresce até 50% da largura → se encontram no centro
+                const fl = flood.querySelector('.flood-left');
+                const fr = flood.querySelector('.flood-right');
+                if (fl) fl.style.width = '50%';
+                if (fr) fr.style.width = '50%';
                 if (window.lucide) lucide.createIcons();
                 setTimeout(() => {
                     const fc = document.getElementById('flood-content');
                     if (fc) { fc.style.opacity = '1'; fc.style.transform = 'translateY(0)'; }
-                }, 400);
+                }, 500);
             });
 
             if (redirectUrl) {
                 setTimeout(() => { window.open(redirectUrl, '_blank', 'noopener'); }, 5000);
             }
-        }, 600);
+        }, 500);
     };
 
     // Extrai o respondente das respostas (campos de email/nome) com fallbacks

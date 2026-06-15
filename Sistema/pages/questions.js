@@ -65,10 +65,8 @@ export const renderQuestions = (container) => {
                                         const bg = isActive ? '#010101' : 'transparent';
                                         const textColor = isActive ? '#F0F0F2' : '#010101';
                                         const weight = isActive ? '600' : '400';
-                                        const dotColor = getCategoryDot(cat, isActive);
                                         return `
-                                            <button class="cat-btn" data-cat="${cat}" style="width: 100%; height: 40px; border-radius: 12px; background-color: ${bg}; color: ${textColor}; font-weight: ${weight}; font-size: 14px; padding-left: 12px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: flex-start; gap: 8px;">
-                                                <div style="width: 6px; height: 6px; border-radius: 50%; background-color: ${cat === 'Todas' && !isActive ? 'transparent' : dotColor};"></div>
+                                            <button class="cat-btn" data-cat="${cat}" style="width: 100%; height: 40px; border-radius: 12px; background-color: ${bg}; color: ${textColor}; font-weight: ${weight}; font-size: 14px; padding-left: 14px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: flex-start;">
                                                 ${cat}
                                             </button>
                                         `;
