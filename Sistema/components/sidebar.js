@@ -114,7 +114,7 @@ function injectStyles() {
         .sb-logo__mark { font-size: 20px; color: var(--sb-fg, #010101); line-height: 1; flex-shrink: 0; width: 24px; text-align: center; display: flex; align-items: center; justify-content: center; }
         .sb-logo__text { font-size: 16px; font-weight: 700; color: var(--sb-fg, #010101); letter-spacing: -0.01em; white-space: nowrap; }
 
-        .sb-nav { display: flex; flex-direction: column; gap: 4px; flex: 1; overflow-y: auto; overflow-x: hidden; }
+        .sb-nav { display: flex; flex-direction: column; gap: 4px; flex: 1; overflow-y: auto; overflow-x: hidden; padding: 0; margin: 0; }
         .sb-section-label {
             font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em;
             color: var(--sb-muted, rgba(1,1,1,0.35)); padding: 4px 10px; white-space: nowrap;
@@ -173,9 +173,16 @@ function injectStyles() {
             display: none;
         }
         #sidebar-wrapper.is-collapsed .sb-section-label { display: none; }
-        /* item ativo colapsado: fundo quadrado de 44px, ícone alinhado igual aos demais */
-        #sidebar-wrapper.is-collapsed .sb-item--active {
-            width: 44px; padding: 0 10px;
+
+        /* ALINHAMENTO COLAPSADO: todos os elementos mantêm width:100% e padding:0 10px.
+           O item ativo mantém seu fundo arredondado naturalmente.
+           A estrela (.sb-logo__mark) recebe o mesmo width/display do .sb-item__icon
+           para garantir que o centro fique idêntico ao dos ícones SVG. */
+        #sidebar-wrapper.is-collapsed .sb-logo__mark {
+            width: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         /* Tooltip flutuante (fixed → escapa do sidebar) */
