@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,24 +8,27 @@
     <!-- Instrument Sans Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&display=swap"
+        rel="stylesheet">
     <!-- Lucide Icons (CDN) -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="lucide.min.js"></script>
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
     <!-- Aplica o tema salvo antes do render para evitar flash -->
     <script>
-        (function() {
+        (function () {
             try {
                 var t = localStorage.getItem('5k9_theme') || 'light';
                 document.documentElement.setAttribute('data-theme', t);
-            } catch (e) {}
+            } catch (e) { }
         })();
     </script>
 </head>
+
 <body>
     <div id="app"></div>
     <!-- Scripts -->
     <script type="module" src="app.js"></script>
 </body>
+
 </html>
